@@ -1,0 +1,12 @@
+[package]
+name = "nest-editor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.15.3"
+bevy_egui = "0.33.0"
+bevy_winit = "0.15.3"
+egui_dock = "0.16.0"
+libloading = "0.8.6"
+winit = "0.30"

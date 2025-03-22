@@ -1,0 +1,10 @@
+[package]
+name = "example_bevy_project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.15.3"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
