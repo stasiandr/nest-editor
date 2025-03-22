@@ -3,6 +3,8 @@ pub mod user_project;
 
 
 
+use std::ops::Deref;
+
 use bevy::prelude::*;
 use bevy::window::{PrimaryWindow, WindowWrapper};
 use bevy::{app::App, window::WindowPlugin, DefaultPlugins};
@@ -25,6 +27,7 @@ struct WinitApp {
     window_entity: Option<Entity>,
     editor_app: App,
     game_app: Option<App>,
+    target: bool,
 }
 
 impl winit::application::ApplicationHandler for WinitApp {
@@ -32,25 +35,27 @@ impl winit::application::ApplicationHandler for WinitApp {
         let window = event_loop.create_window(Window::default_attributes()).unwrap();
         let editor_window_id = window.id();
     
-        // let mut windows = bevy_winit::WinitWindows::default();
-        // let entity = self.editor_app.world_mut().spawn_empty().id();
-        // windows.entity_to_winit.insert(entity, editor_window_id);
-        // windows.winit_to_entity.insert(editor_window_id, entity);
+        let mut windows = bevy_winit::WinitWindows::default();
+        let entity = self.editor_app.world_mut().spawn_empty().id();
+        windows.entity_to_winit.insert(entity, editor_window_id);
+        windows.winit_to_entity.insert(editor_window_id, entity);
         
-        // let wrapper = windows.windows
-        //     .entry(editor_window_id)
-        //     .insert(WindowWrapper::new(window))
-        //     .into_mut();
+        let wrapper = windows.windows
+            .entry(editor_window_id)
+            .insert(WindowWrapper::new(window))
+            .into_mut();
 
-        // let mut e = self.editor_app.world_mut().entity_mut(entity);
-        // e.insert(PrimaryWindow);
-        // e.insert(bevy::window::Window::default());
-        // e.insert(bevy::window::RawHandleWrapper::new(wrapper).unwrap());
+        let mut e = self.editor_app.world_mut().entity_mut(entity);
+        e.insert(PrimaryWindow);
+        e.insert(bevy::window::Window::default());
+        e.insert(bevy::window::RawHandleWrapper::new(wrapper).unwrap());
 
-        // self.editor_app.insert_non_send_resource(windows);
-        // self.editor_app.finish();
-        // self.editor_app.cleanup();
-        // self.window_entity = Some(entity);
+        let handle_clone = bevy::window::RawHandleWrapper::new(wrapper).unwrap();
+
+        self.editor_app.insert_non_send_resource(windows);
+        self.editor_app.finish();
+        self.editor_app.cleanup();
+        self.window_entity = Some(entity);
 
 
         // Initializing child app
@@ -62,37 +67,47 @@ impl winit::application::ApplicationHandler for WinitApp {
         windows.entity_to_winit.insert(entity, editor_window_id);
         windows.winit_to_entity.insert(editor_window_id, entity);
         
-        let wrapper = windows.windows
-            .entry(editor_window_id)
-            .insert(WindowWrapper::new(window))
-            .into_mut();
+        // let wrapper = windows.windows
+        //     .entry(editor_window_id)
+        //     .insert(WindowWrapper::new(window))
+        //     .into_mut();
 
         let mut e = game_app.world_mut().entity_mut(entity);
         e.insert(PrimaryWindow);
         e.insert(bevy::window::Window::default());
-        e.insert(bevy::window::RawHandleWrapper::new(wrapper).unwrap());
+        e.insert(handle_clone);
 
         game_app.insert_non_send_resource(windows);
         game_app.finish();
         game_app.cleanup();
 
-        self.window_entity = Some(entity);
+        // self.window_entity = Some(entity);
     }
 
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
+        
         match event {
+            WindowEvent::KeyboardInput { device_id, event, is_synthetic } => {
+                self.target = !self.target;
+            }
             WindowEvent::CloseRequested => {
                 println!("The close button was pressed; stopping");
                 event_loop.exit();
             },
             WindowEvent::RedrawRequested => {
-                // self.editor_app.update();
-                // let window = self.editor_app.world().non_send_resource::<bevy_winit::WinitWindows>().get_window(self.window_entity.unwrap());
-                // window.unwrap().request_redraw();
+                if self.target {
+                    println!("rendering editor");
+                    self.game_app.as_mut().unwrap().update();
+                } else {
+                    println!("rendering game");
+                    self.editor_app.update();
+                }
 
-                self.game_app.as_mut().unwrap().update();
-                let window = self.game_app.as_mut().unwrap().world().non_send_resource::<bevy_winit::WinitWindows>().get_window(self.window_entity.unwrap());
+                let window = self.editor_app.world().non_send_resource::<bevy_winit::WinitWindows>().get_window(self.window_entity.unwrap());
                 window.unwrap().request_redraw();
+                
+                // let window = self.game_app.as_mut().unwrap().world().non_send_resource::<bevy_winit::WinitWindows>().get_window(self.window_entity.unwrap());
+                // window.unwrap().request_redraw();
             }
             _ => (),
         }
@@ -138,6 +153,7 @@ fn main() {
         window_entity: None,
         editor_app,
         game_app: Some(game_app),
+        target: true,
     };
     event_loop.run_app(&mut winit_app).unwrap();
 }
