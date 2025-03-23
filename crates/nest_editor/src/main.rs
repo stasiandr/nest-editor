@@ -3,10 +3,12 @@ pub mod user_project;
 pub mod utils;
 pub mod test_systems;
 pub mod winit_app_utils;
+pub mod raw_app_wrapper;
 
 
 use bevy::prelude::*;
 use bevy::{app::App, window::WindowPlugin, DefaultPlugins};
+use raw_app_wrapper::RawAppWrapper;
 use winit::{event::WindowEvent, event_loop::{ActiveEventLoop, EventLoop}, window::{Window, WindowId}};
 
 
@@ -75,7 +77,7 @@ impl winit::application::ApplicationHandler for WinitApp {
 
 
 fn main() {
-    nest_editor_shared::test();
+    RawAppWrapper::load_from_dylib().update();
 
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(winit::event_loop::ControlFlow::Poll);

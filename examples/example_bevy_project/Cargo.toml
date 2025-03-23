@@ -13,3 +13,50 @@ crate-type = ["cdylib", "rlib"]
 [profile.dev]
 lto = false
 strip = false
+
+[patch.crates-io]
+bevy = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+
+bevy_a11y = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_animation = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_app = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_asset = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_audio = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_color = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_core = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_core_pipeline = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_derive = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_dev_tools = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_diagnostic = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_dylib = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_ecs = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_encase_derive = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_gilrs = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_gizmos = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_gltf = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_hierarchy = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_image = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_input = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_internal = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_log = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_macro_utils = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_math = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_mesh = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_mikktspace = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_pbr = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_picking = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_ptr = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_reflect = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_remote = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_render = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_scene = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_sprite = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_state = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_tasks = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_text = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_time = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_transform = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_ui = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_utils = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_window = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+bevy_winit = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }

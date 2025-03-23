@@ -4,12 +4,12 @@ use bevy::prelude::*;
 pub extern "C" fn app_builder() -> *mut App {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins.build()
-        // .disable::<bevy::winit::WinitPlugin>()
-        // .set(WindowPlugin {
-        //     primary_window: None,
-        //     exit_condition: bevy::window::ExitCondition::DontExit,
-        //     ..Default::default()
-        // })
+        .disable::<bevy::winit::WinitPlugin>()
+        .set(WindowPlugin {
+            primary_window: None,
+            exit_condition: bevy::window::ExitCondition::DontExit,
+            ..Default::default()
+        })
     );
 
     app.add_systems(Startup, setup);
@@ -29,11 +29,6 @@ pub unsafe extern "C" fn update_app(app_ptr: *mut App) {
         // Let Bevy do its update for this frame:
         app.update();
     }
-}
-#[no_mangle]
-pub fn app_mod(app: &mut App) {
-    app.add_systems(Startup, setup);
-    app.add_systems(Update, camera_rotate);
 }
 
 
