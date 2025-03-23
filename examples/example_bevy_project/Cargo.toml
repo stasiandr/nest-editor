@@ -8,3 +8,7 @@ bevy = "0.15.3"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[profile.dev]
+lto = false
+strip = false

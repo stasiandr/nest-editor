@@ -72,6 +72,11 @@ impl egui_dock::TabViewer for TabViewer {
     }
 }
 
+#[derive(Reflect)]
+struct Kek {
+    pub i: i32    
+}
+
 impl Default for NestEditorState {
     fn default() -> Self {
         let tree = DockState::new(vec![
