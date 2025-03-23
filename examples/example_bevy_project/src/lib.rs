@@ -1,31 +1,35 @@
-use bevy::{app::AppLabel, prelude::*};
+use bevy::prelude::*;
 
-#[derive(Debug, AppLabel, Hash, PartialEq, Eq, Clone)]
-pub struct BevySubAppLabel;
 
-pub fn standalone() {
+#[no_mangle]
+pub fn app_builder() -> App {
     let mut app = App::new();
-    app.add_plugins(DefaultPlugins);
-    
-    // let mut sub_app = SubApp::new();
-    // sub_app.add_systems(Startup, setup);
-    // app.insert_sub_app(BevySubAppLabel, sub_app);
+    app.add_plugins(DefaultPlugins.build()
+        .disable::<bevy::winit::WinitPlugin>()
+        .set(WindowPlugin {
+            primary_window: None,
+            exit_condition: bevy::window::ExitCondition::DontExit,
+            ..Default::default()
+        })
+    );
 
-    app.set_runner(my_runner);
-    app.run();
+    app.add_systems(Startup, setup);
+    app.add_systems(Update, camera_rotate);
+
+    app
 }
 
-fn my_runner(mut app: App) -> AppExit {
-    app.finish();
-    app.cleanup();
 
-    loop {
-        app.update();
-        if let Some(exit) = app.should_exit() {
-            return exit;
-        }
+fn camera_rotate(
+    time: Res<Time>,
+    mut q: Query<(&mut Transform, &Camera3d)>,
+) {
+    for (mut t, _) in q.iter_mut() {
+        t.rotate(Quat::from_rotation_y(ops::sin_cos(time.delta_secs()).0 * 0.1));
     }
+
 }
+
 
 /// set up a simple 3D scene
 fn setup(

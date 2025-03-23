@@ -1,3 +1,4 @@
 fn main() {
-    example_bevy_project::standalone();
+    let mut app = example_bevy_project::app_builder();
+    app.run();
 }

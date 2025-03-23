@@ -1,19 +1,31 @@
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
+use bevy_egui::{egui::{self, Widget}, EguiContexts};
 use egui_dock::DockState;
 
+#[derive(Default)]
+pub struct NestEditorViewPlugin;
 
+impl Plugin for NestEditorViewPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(NestEditorState::default());
+        app.insert_resource(TabViewer::default());
+        app.add_systems(Update, editor_ui_update);
+    }
+}
 
 
 pub fn editor_ui_update(
     mut contexts: EguiContexts,
-    mut app_state: ResMut<NestEditorState>,
-    mut tab_viewer: ResMut<TabViewer>,
+    mut _app_state: ResMut<NestEditorState>,
+    mut _tab_viewer: ResMut<TabViewer>,
 ) {
-    let tab_viewer = tab_viewer.as_mut();
-
-    egui_dock::DockArea::new(&mut app_state.tree)
-        .show(contexts.ctx_mut(), tab_viewer);
+    let ctx = contexts.ctx_mut();
+    egui::Window::new("title").show(ctx, |ui| {
+        egui::Button::new("Run game").ui(ui);
+    });
+    // let tab_viewer = tab_viewer.as_mut();
+    // egui_dock::DockArea::new(&mut app_state.tree)
+    //     .show(contexts.ctx_mut(), tab_viewer);
 }
 
 
