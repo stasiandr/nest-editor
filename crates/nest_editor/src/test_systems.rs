@@ -74,8 +74,6 @@ pub fn camera_rotate(
     time: Res<Time>,
     mut q: Query<(&mut Transform, &Camera3d)>,
 ) {
-    println!("{}", ops::sin_cos(time.elapsed_secs()).0);
-
     for (mut t, _) in q.iter_mut() {
         t.rotate(Quat::from_rotation_y(ops::sin_cos(time.elapsed_secs() + PI / 2.0).0 * 0.001));
     }

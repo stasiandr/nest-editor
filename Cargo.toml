@@ -2,7 +2,7 @@
 resolver = "2"
 
 members = [
-    "nest_editor",
+    "crates/nest_editor",
 ]
 
 exclude = [

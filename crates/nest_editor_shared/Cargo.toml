@@ -1,5 +1,5 @@
 [package]
-name = "nest-editor"
+name = "nest_editor_shared"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,3 +10,4 @@ bevy_winit = "0.15.3"
 egui_dock = "0.16.0"
 libloading = "0.8.6"
 winit = { version = "0.30", default-features = false, features = ["rwh_06"] }
+

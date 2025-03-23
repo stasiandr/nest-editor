@@ -3269,7 +3269,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "nest-editor"
+name = "nest_editor"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_egui",
+ "bevy_winit",
+ "egui_dock",
+ "libloading",
+ "nest_editor_shared",
+ "winit",
+]
+
+[[package]]
+name = "nest_editor_shared"
 version = "0.1.0"
 dependencies = [
  "bevy",

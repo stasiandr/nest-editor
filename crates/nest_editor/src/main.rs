@@ -2,16 +2,16 @@ pub mod view;
 pub mod user_project;
 pub mod utils;
 pub mod test_systems;
+pub mod winit_app_utils;
 
 
 use bevy::prelude::*;
-use bevy::window::{PrimaryWindow, WindowWrapper};
 use bevy::{app::App, window::WindowPlugin, DefaultPlugins};
 use winit::{event::WindowEvent, event_loop::{ActiveEventLoop, EventLoop}, window::{Window, WindowId}};
 
 
 #[derive(Default)]
-struct WinitApp {
+pub struct WinitApp {
     editor_app: App,
     main_window: MainWindow,
 }
@@ -25,32 +25,8 @@ struct MainWindow {
 
 impl winit::application::ApplicationHandler for WinitApp {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        let window = event_loop.create_window(Window::default_attributes()).unwrap();
-        let editor_window_id = window.id();
-    
-        let mut windows = bevy_winit::WinitWindows::default();
-        let entity = self.editor_app.world_mut().spawn_empty().id();
-        windows.entity_to_winit.insert(entity, editor_window_id);
-        windows.winit_to_entity.insert(editor_window_id, entity);
-        
-        let wrapper = windows.windows
-            .entry(editor_window_id)
-            .insert(WindowWrapper::new(window))
-            .into_mut();
-
-        let mut e = self.editor_app.world_mut().entity_mut(entity);
-        e.insert(PrimaryWindow);
-        e.insert(bevy::window::Window::default());
-        e.insert(bevy::window::RawHandleWrapper::new(wrapper).unwrap());
-
-        self.main_window.window_handle = Some(bevy::window::RawHandleWrapper::new(wrapper).unwrap());
-
-        self.editor_app.insert_non_send_resource(windows);
-        self.editor_app.finish();
-        self.editor_app.cleanup();
-        self.main_window.editor_window_entity = Some(entity);
-
-        self.main_window.window_id = Some(editor_window_id);
+        let window = event_loop.create_window(Window::default_attributes()).unwrap();    
+        self.insert_window_into_editor_app(window);
     }
 
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
@@ -64,21 +40,7 @@ impl winit::application::ApplicationHandler for WinitApp {
             }
 
             WindowEvent::CursorMoved { device_id: _, position } => {
-                let physical_position = bevy::math::DVec2::new(position.x, position.y);
-
-                let last_position = win.physical_cursor_position();
-                let delta = last_position.map(|last_pos| {
-                    (physical_position.as_vec2() - last_pos) / win.resolution.scale_factor()
-                });
-
-                win.set_physical_cursor_position(Some(physical_position));
-                let position = (physical_position / win.resolution.scale_factor() as f64).as_vec2();
-                let event = CursorMoved {
-                    window: self.main_window.editor_window_entity.unwrap(),
-                    position,
-                    delta,
-                };
-                self.editor_app.world_mut().send_event(event);
+                self.handle_mouse_move(position);
             }
             WindowEvent::MouseInput { state, button, .. } => {
                 self.editor_app.world_mut().send_event(bevy::input::mouse::MouseButtonInput {
@@ -111,7 +73,9 @@ impl winit::application::ApplicationHandler for WinitApp {
     }
 }
 
+
 fn main() {
+    nest_editor_shared::test();
 
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(winit::event_loop::ControlFlow::Poll);
