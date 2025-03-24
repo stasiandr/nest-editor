@@ -1,6 +1,6 @@
 use std::ptr::NonNull;
 
-use bevy::{app::Plugin, window::RawHandleWrapper};
+use bevy::{app::Plugin, ecs::entity::Entity, window::RawHandleWrapper};
 use winit::raw_window_handle::{AppKitDisplayHandle, RawWindowHandle};
 
 pub struct NestEditorSharedPlugin;
@@ -18,7 +18,7 @@ pub extern "C" fn test() {
 
 
 pub fn handle_wrapper_from_app_kit(app_kit_handle: *mut std::ffi::c_void) -> RawHandleWrapper {
-        let ns_view = app_kit_handle;
+    let ns_view = app_kit_handle;
     let app_kit_handle = winit::raw_window_handle::AppKitWindowHandle::new(NonNull::new(ns_view).unwrap());
     let window_handle = RawWindowHandle::AppKit(app_kit_handle);
 
@@ -40,18 +40,17 @@ pub fn raw_pointer_from_handle_wrapper(handle: RawHandleWrapper) -> *mut std::ff
 
 
 /// # Safety
-/// No-one can stop me
+/// I'm not in danger, I'm the danger
 #[no_mangle]
 pub unsafe extern "C" fn set_window_handle_from_app_kit(app: *mut bevy::app::App, app_kit_handle: *mut std::ffi::c_void) {
-    let wrapper = handle_wrapper_from_app_kit(app_kit_handle);
-
-    let app = unsafe { app.as_mut().unwrap() };
-    let (res , _) = app.world_mut().query::<(bevy::ecs::entity::Entity, &bevy::window::RawHandleWrapper)>().single(app.world_mut());
+    let app = app.as_mut().unwrap();
+    let wrapper = handle_wrapper_from_app_kit(app_kit_handle);    
+    let (res, _)  = app.world_mut().query::<(Entity, &bevy::window::PrimaryWindow)>().single(app.world_mut());
     app.world_mut().entity_mut(res).insert(wrapper);
 }
 
 /// # Safety
-/// No-one can stop me
+/// I'm not in danger, I'm the danger
 #[no_mangle]
 pub unsafe extern "C" fn remove_window_handle(app: *mut bevy::app::App) {
     let app = unsafe { app.as_mut().unwrap() };

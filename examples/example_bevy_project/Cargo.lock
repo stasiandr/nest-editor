@@ -278,9 +278,13 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "atomicow"
-version = "1.0.0"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "467163b50876d3a4a44da5f4dbd417537e522fc059ede8d518d57941cfb3d745"
+checksum = "f52e8890bb9844440d0c412fa74b67fd2f14e85248b6e00708059b6da9e5f8bf"
+dependencies = [
+ "portable-atomic",
+ "portable-atomic-util",
+]
 
 [[package]]
 name = "autocfg"
@@ -303,7 +307,7 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 [[package]]
 name = "bevy"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_internal",
 ]
@@ -311,7 +315,7 @@ dependencies = [
 [[package]]
 name = "bevy_a11y"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "accesskit",
  "bevy_app",
@@ -323,7 +327,7 @@ dependencies = [
 [[package]]
 name = "bevy_animation"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -354,7 +358,7 @@ dependencies = [
 [[package]]
 name = "bevy_app"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_derive",
  "bevy_ecs",
@@ -372,7 +376,7 @@ dependencies = [
 [[package]]
 name = "bevy_asset"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "async-broadcast",
  "async-fs",
@@ -408,7 +412,7 @@ dependencies = [
 [[package]]
 name = "bevy_asset_macros"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "proc-macro2",
@@ -419,7 +423,7 @@ dependencies = [
 [[package]]
 name = "bevy_audio"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -437,7 +441,7 @@ dependencies = [
 [[package]]
 name = "bevy_color"
 version = "0.15.4"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_math",
  "bevy_reflect",
@@ -451,7 +455,7 @@ dependencies = [
 [[package]]
 name = "bevy_core"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_ecs",
@@ -464,7 +468,7 @@ dependencies = [
 [[package]]
 name = "bevy_core_pipeline"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -490,7 +494,7 @@ dependencies = [
 [[package]]
 name = "bevy_derive"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "quote",
@@ -500,7 +504,7 @@ dependencies = [
 [[package]]
 name = "bevy_diagnostic"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_core",
@@ -515,7 +519,7 @@ dependencies = [
 [[package]]
 name = "bevy_ecs"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "arrayvec",
  "bevy_ecs_macros",
@@ -537,7 +541,7 @@ dependencies = [
 [[package]]
 name = "bevy_ecs_macros"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "proc-macro2",
@@ -548,7 +552,7 @@ dependencies = [
 [[package]]
 name = "bevy_encase_derive"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "encase_derive_impl",
@@ -557,7 +561,7 @@ dependencies = [
 [[package]]
 name = "bevy_gilrs"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_ecs",
@@ -571,7 +575,7 @@ dependencies = [
 [[package]]
 name = "bevy_gizmos"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -594,7 +598,7 @@ dependencies = [
 [[package]]
 name = "bevy_gizmos_macros"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "proc-macro2",
@@ -605,7 +609,7 @@ dependencies = [
 [[package]]
 name = "bevy_gltf"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "base64 0.22.1",
  "bevy_animation",
@@ -636,7 +640,7 @@ dependencies = [
 [[package]]
 name = "bevy_hierarchy"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_core",
@@ -650,7 +654,7 @@ dependencies = [
 [[package]]
 name = "bevy_image"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_asset",
  "bevy_color",
@@ -671,7 +675,7 @@ dependencies = [
 [[package]]
 name = "bevy_input"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_core",
@@ -686,7 +690,7 @@ dependencies = [
 [[package]]
 name = "bevy_internal"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_a11y",
  "bevy_animation",
@@ -728,22 +732,24 @@ dependencies = [
 [[package]]
 name = "bevy_log"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "android_log-sys",
  "bevy_app",
  "bevy_ecs",
  "bevy_utils",
+ "tracing-error",
  "tracing-log",
  "tracing-oslog",
  "tracing-subscriber",
+ "tracing-tracy",
  "tracing-wasm",
 ]
 
 [[package]]
 name = "bevy_macro_utils"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -754,7 +760,7 @@ dependencies = [
 [[package]]
 name = "bevy_math"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_reflect",
  "derive_more",
@@ -769,7 +775,7 @@ dependencies = [
 [[package]]
 name = "bevy_mesh"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_asset",
  "bevy_derive",
@@ -791,7 +797,7 @@ dependencies = [
 [[package]]
 name = "bevy_mikktspace"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "glam",
 ]
@@ -799,7 +805,7 @@ dependencies = [
 [[package]]
 name = "bevy_pbr"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -827,7 +833,7 @@ dependencies = [
 [[package]]
 name = "bevy_picking"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -850,12 +856,12 @@ dependencies = [
 [[package]]
 name = "bevy_ptr"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 
 [[package]]
 name = "bevy_reflect"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "assert_type_match",
  "bevy_ptr",
@@ -876,7 +882,7 @@ dependencies = [
 [[package]]
 name = "bevy_reflect_derive"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "proc-macro2",
@@ -888,7 +894,7 @@ dependencies = [
 [[package]]
 name = "bevy_render"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "async-channel",
  "bevy_app",
@@ -923,6 +929,7 @@ dependencies = [
  "naga_oil",
  "nonmax",
  "offset-allocator",
+ "profiling",
  "send_wrapper",
  "serde",
  "smallvec",
@@ -934,7 +941,7 @@ dependencies = [
 [[package]]
 name = "bevy_render_macros"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "proc-macro2",
@@ -945,7 +952,7 @@ dependencies = [
 [[package]]
 name = "bevy_scene"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -964,7 +971,7 @@ dependencies = [
 [[package]]
 name = "bevy_sprite"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -993,7 +1000,7 @@ dependencies = [
 [[package]]
 name = "bevy_state"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_ecs",
@@ -1006,7 +1013,7 @@ dependencies = [
 [[package]]
 name = "bevy_state_macros"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_macro_utils",
  "proc-macro2",
@@ -1017,7 +1024,7 @@ dependencies = [
 [[package]]
 name = "bevy_tasks"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "async-channel",
  "async-executor",
@@ -1031,7 +1038,7 @@ dependencies = [
 [[package]]
 name = "bevy_text"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -1058,7 +1065,7 @@ dependencies = [
 [[package]]
 name = "bevy_time"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_ecs",
@@ -1070,7 +1077,7 @@ dependencies = [
 [[package]]
 name = "bevy_transform"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "bevy_app",
  "bevy_ecs",
@@ -1083,7 +1090,7 @@ dependencies = [
 [[package]]
 name = "bevy_ui"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "accesskit",
  "bevy_a11y",
@@ -1115,7 +1122,7 @@ dependencies = [
 [[package]]
 name = "bevy_utils"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "ahash",
  "bevy_utils_proc_macros",
@@ -1129,7 +1136,7 @@ dependencies = [
 [[package]]
 name = "bevy_utils_proc_macros"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1139,7 +1146,7 @@ dependencies = [
 [[package]]
 name = "bevy_window"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "android-activity",
  "bevy_a11y",
@@ -1156,7 +1163,7 @@ dependencies = [
 [[package]]
 name = "bevy_winit"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 dependencies = [
  "accesskit",
  "accesskit_winit",
@@ -1351,9 +1358,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.16"
+version = "1.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be714c154be609ec7f5dad223a33bf1482fff90472de28f7362806e6d4832b8c"
+checksum = "1fcb57c740ae1daf453ae85f16e37396f672b039e00d9d866e07ddb24e328e3a"
 dependencies = [
  "jobserver",
  "libc",
@@ -2003,6 +2010,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "generator"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc6bd114ceda131d3b1d665eba35788690ad37f5916457286b32ab6fd3c438dd"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "log",
+ "rustversion",
+ "windows 0.58.0",
+]
+
+[[package]]
 name = "gethostname"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2490,6 +2510,19 @@ name = "log"
 version = "0.4.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30bde2b3dc3671ae49d8e2e9f044c7c005836e7a023ee57cffa25ab82764bb9e"
+
+[[package]]
+name = "loom"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "419e0dc8046cb947daa77eb95ae174acfbddb7673b4151f56d1eed8e93fbfaca"
+dependencies = [
+ "cfg-if",
+ "generator",
+ "scoped-tls",
+ "tracing",
+ "tracing-subscriber",
+]
 
 [[package]]
 name = "mach2"
@@ -3156,6 +3189,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "portable-atomic"
+version = "1.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "350e9b48cbc6b0e028b0473b114454c6316e57336ee184ceab6e53f72c178b3e"
+
+[[package]]
+name = "portable-atomic-util"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8a2f0d8d040d7848a709caf78912debcc3f33ee4b3cac47d73d1e1069e83507"
+dependencies = [
+ "portable-atomic",
+]
+
+[[package]]
 name = "pp-rs"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3170,7 +3218,7 @@ version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "85eae3c4ed2f50dcfe72643da4befc30deadb458a9b590d720cde2f2b1e97da9"
 dependencies = [
- "zerocopy 0.8.23",
+ "zerocopy 0.8.24",
 ]
 
 [[package]]
@@ -3212,6 +3260,20 @@ name = "profiling"
 version = "1.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "afbdc74edc00b6f6a218ca6a5364d6226a259d4b8ea1af4a0ea063f27e179f4d"
+dependencies = [
+ "profiling-procmacros",
+ "tracing",
+]
+
+[[package]]
+name = "profiling-procmacros"
+version = "1.0.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a65f2e60fbf1063868558d69c6beacf412dc755f9fc020f514b7955fc914fe30"
+dependencies = [
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "quote"
@@ -3484,6 +3546,12 @@ checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
 dependencies = [
  "winapi-util",
 ]
+
+[[package]]
+name = "scoped-tls"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1cf6437eb19a8f4a6cc0f7dca544973b0b78843adbfeb3683d1a94a0024a294"
 
 [[package]]
 name = "scopeguard"
@@ -3796,6 +3864,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-error"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b1581020d7a273442f5b45074a6a57d5757ad0a47dac0e9f0bd57b81936f3db"
+dependencies = [
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "tracing-log"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3840,6 +3918,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-tracy"
+version = "0.11.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0eaa1852afa96e0fe9e44caa53dc0bd2d9d05e0f2611ce09f97f8677af56e4ba"
+dependencies = [
+ "tracing-core",
+ "tracing-subscriber",
+ "tracy-client",
+]
+
+[[package]]
 name = "tracing-wasm"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3848,6 +3937,27 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "tracy-client"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d90a2c01305b02b76fdd89ac8608bae27e173c829a35f7d76a345ab5d33836db"
+dependencies = [
+ "loom",
+ "once_cell",
+ "tracy-client-sys",
+]
+
+[[package]]
+name = "tracy-client-sys"
+version = "0.24.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69fff37da548239c3bf9e64a12193d261e8b22b660991c6fd2df057c168f435f"
+dependencies = [
+ "cc",
+ "windows-targets 0.48.5",
 ]
 
 [[package]]
@@ -4786,11 +4896,11 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.8.23"
+version = "0.8.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd97444d05a4328b90e75e503a34bad781f14e28a823ad3557f0750df1ebcbc6"
+checksum = "2586fea28e186957ef732a5f8b3be2da217d65c5969d4b1e17f973ebbe876879"
 dependencies = [
- "zerocopy-derive 0.8.23",
+ "zerocopy-derive 0.8.24",
 ]
 
 [[package]]
@@ -4806,9 +4916,9 @@ dependencies = [
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.23"
+version = "0.8.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6352c01d0edd5db859a63e2605f4ea3183ddbd15e2c4a9e7d32184df75e4f154"
+checksum = "a996a8f63c5c4448cd959ac1bab0aaa3306ccfd060472f85943ee0750f0169be"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4818,14 +4928,14 @@ dependencies = [
 [[patch.unused]]
 name = "bevy_dev_tools"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 
 [[patch.unused]]
 name = "bevy_dylib"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
 
 [[patch.unused]]
 name = "bevy_remote"
 version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#090a4b01d8883b20c3b2c9d22718e19ef4c4ea3c"
+source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"

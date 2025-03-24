@@ -7,8 +7,10 @@ pub mod raw_app_wrapper;
 
 
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
 use bevy::{app::App, window::WindowPlugin, DefaultPlugins};
 use raw_app_wrapper::RawAppWrapper;
+use winit::keyboard::Key;
 use winit::{event::WindowEvent, event_loop::{ActiveEventLoop, EventLoop}, window::{Window, WindowId}};
 
 
@@ -16,6 +18,9 @@ use winit::{event::WindowEvent, event_loop::{ActiveEventLoop, EventLoop}, window
 pub struct WinitApp {
     editor_app: App,
     main_window: MainWindow,
+    game_app: RawAppWrapper,
+
+    pub windows: bevy::utils::HashMap<WindowId, bevy::window::WindowWrapper<Window>>,
 }
 
 #[derive(Default)]
@@ -28,17 +33,14 @@ struct MainWindow {
 impl winit::application::ApplicationHandler for WinitApp {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let window = event_loop.create_window(Window::default_attributes()).unwrap();    
+        
         self.insert_window_into_editor_app(window);
     }
 
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
-        
-        let mut win_entity = self.editor_app.world_mut().entity_mut(self.main_window.editor_window_entity.unwrap());
-        let mut win = win_entity.get_mut::<bevy::window::Window>().unwrap();
-        
         match event {
-            WindowEvent::Resized(size) => {
-                win.resolution.set_physical_resolution(size.width, size.height);
+            WindowEvent::Resized(_size) => {
+                // win.resolution.set_physical_resolution(size.width, size.height);
             }
 
             WindowEvent::CursorMoved { device_id: _, position } => {
@@ -57,7 +59,27 @@ impl winit::application::ApplicationHandler for WinitApp {
                     return;
                 }
 
-                println!("Switching targets");
+                if let Key::Named(winit::keyboard::NamedKey::Tab) = event.logical_key {
+
+                    if !self.game_app.window_passed {
+                        self.game_app = RawAppWrapper::load_from_dylib();
+
+                        let (res , _) = self.editor_app.world_mut().query::<(bevy::ecs::entity::Entity, &PrimaryWindow)>().single(self.editor_app.world_mut());
+                        self.editor_app.world_mut().entity_mut(res).remove::<bevy::window::RawHandleWrapper>();
+
+                        self.game_app.pass_window(self.main_window.window_handle.clone().unwrap());
+                    } else {
+                        self.game_app.remove_window();
+
+                        let (res , _) = self.editor_app.world_mut().query::<(bevy::ecs::entity::Entity, &PrimaryWindow)>().single(self.editor_app.world_mut());
+                        self.editor_app.world_mut().entity_mut(res).insert(self.main_window.window_handle.as_ref().unwrap().clone());
+
+                        self.game_app.unload();
+                    }
+                    
+
+                    println!("Switching targets");
+                }
             }
             WindowEvent::CloseRequested => {
                 println!("The close button was pressed; stopping");
@@ -65,10 +87,15 @@ impl winit::application::ApplicationHandler for WinitApp {
             },
             WindowEvent::RedrawRequested => {
                 
-                self.editor_app.update();
-
-                let window = self.editor_app.world().non_send_resource::<bevy_winit::WinitWindows>().get_window(self.main_window.editor_window_entity.unwrap());
-                window.unwrap().request_redraw();
+                if self.game_app.window_passed {
+                    self.game_app.update();
+                } else {
+                    self.editor_app.update();
+                }    
+            
+                for w in self.windows.values() {
+                    w.request_redraw();
+                }
             }
             _ => (),
         }
@@ -77,14 +104,13 @@ impl winit::application::ApplicationHandler for WinitApp {
 
 
 fn main() {
-    RawAppWrapper::load_from_dylib().update();
-
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(winit::event_loop::ControlFlow::Poll);
 
     let mut editor_app = App::new();
 
     editor_app.add_plugins(DefaultPlugins.build()
+        // .disable::<bevy::render::pipelined_rendering::PipelinedRenderingPlugin>()
         .disable::<bevy::winit::WinitPlugin>()
         .set(WindowPlugin {
             primary_window: None,

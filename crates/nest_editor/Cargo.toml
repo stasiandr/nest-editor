@@ -11,3 +11,4 @@ egui_dock = "0.16.0"
 libloading = "0.8.6"
 winit = { version = "0.30", default-features = false, features = ["rwh_06"] }
 nest_editor_shared = { path = "../nest_editor_shared" }
+uuid = "*"

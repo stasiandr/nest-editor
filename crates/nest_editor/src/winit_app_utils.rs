@@ -1,3 +1,4 @@
+
 use bevy::prelude::*;
 use bevy::window::{PrimaryWindow, WindowWrapper};
 use winit::dpi::PhysicalPosition;
@@ -27,16 +28,13 @@ impl crate::WinitApp {
 
     pub fn insert_window_into_editor_app(&mut self, window: Window) {
         let main_window_id = window.id();
-        let mut windows = bevy_winit::WinitWindows::default();
-        let entity = self.editor_app.world_mut().spawn_empty().id();
-        windows.entity_to_winit.insert(entity, main_window_id);
-        windows.winit_to_entity.insert(main_window_id, entity);
-        
-        let wrapper = windows.windows
+
+        let wrapper = self.windows
             .entry(main_window_id)
             .insert(WindowWrapper::new(window))
             .into_mut();
 
+        let entity = self.editor_app.world_mut().spawn_empty().id();
         let mut e = self.editor_app.world_mut().entity_mut(entity);
         e.insert(PrimaryWindow);
         e.insert(bevy::window::Window::default());
@@ -44,7 +42,6 @@ impl crate::WinitApp {
 
         self.main_window.window_handle = Some(bevy::window::RawHandleWrapper::new(wrapper).unwrap());
 
-        self.editor_app.insert_non_send_resource(windows);
         self.editor_app.finish();
         self.editor_app.cleanup();
         self.main_window.editor_window_entity = Some(entity);

@@ -1,9 +1,13 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, render::RenderApp};
+
+use nest_editor_shared::set_window_handle_from_app_kit;
+use nest_editor_shared::remove_window_handle;
 
 #[no_mangle]
 pub extern "C" fn app_builder() -> *mut App {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins.build()
+        // .disable::<bevy::render::pipelined_rendering::PipelinedRenderingPlugin>()
         .disable::<bevy::winit::WinitPlugin>()
         .set(WindowPlugin {
             primary_window: None,
@@ -14,6 +18,11 @@ pub extern "C" fn app_builder() -> *mut App {
 
     app.add_systems(Startup, setup);
     app.add_systems(Update, camera_rotate);
+
+    let entity = app.world_mut().spawn_empty().id();
+    let mut e = app.world_mut().entity_mut(entity);
+    e.insert(bevy::window::PrimaryWindow);
+    e.insert(bevy::window::Window::default());
 
     app.finish();
     app.cleanup();
@@ -31,25 +40,23 @@ pub unsafe extern "C" fn update_app(app_ptr: *mut App) {
     }
 }
 
-
-fn camera_rotate(
+pub fn camera_rotate(
     time: Res<Time>,
     mut q: Query<(&mut Transform, &Camera3d)>,
 ) {
     for (mut t, _) in q.iter_mut() {
-        t.rotate(Quat::from_rotation_y(ops::sin_cos(time.delta_secs()).0 * 0.1));
+        t.rotate(Quat::from_rotation_y(ops::sin_cos(time.elapsed_secs() + std::f32::consts::PI / 2.0).0 * 0.001));
     }
-
 }
 
 
-/// set up a simple 3D scene
-fn setup(
+
+pub fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    q: Query<(Entity, &bevy::window::Window)>,
 ) {
-    println!("startup worked");
     // circular base
     commands.spawn((
         Mesh3d(meshes.add(Circle::new(4.0))),
@@ -59,7 +66,7 @@ fn setup(
     // cube
     commands.spawn((
         Mesh3d(meshes.add(Cuboid::new(1.0, 1.0, 1.0))),
-        MeshMaterial3d(materials.add(Color::srgb_u8(124, 144, 255))),
+        MeshMaterial3d(materials.add(Color::srgb_u8(0, 0, 0))),
         Transform::from_xyz(0.0, 0.5, 0.0),
     ));
     // light
@@ -70,11 +77,16 @@ fn setup(
         },
         Transform::from_xyz(4.0, 8.0, 4.0),
     ));
+
+    let window = q.single().0;
+
     // camera
     commands.spawn((
         Camera3d::default(),
         Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
+        // Camera {
+        //     // target: bevy::render::camera::RenderTarget::Window(bevy::window::WindowRef::Entity(window)),
+        //     ..Default::default()
+        // }
     ));
-
-    println!("I'm alive")
 }
