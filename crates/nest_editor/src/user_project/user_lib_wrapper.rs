@@ -56,4 +56,14 @@ impl UserLibWrapper {
         let handle_window_resize: Symbol<extern "C" fn(*mut App, u32, u32)> = unsafe { self.lib.get(b"handle_window_resize").unwrap() };
         handle_window_resize(app, x, y);
     }
+
+    pub fn handle_mouse_input(&self, app: *mut App, json_serialized: *const i8) {
+        let handle_mouse_input: Symbol<extern "C" fn(*mut App, *const i8)> = unsafe { self.lib.get(b"handle_mouse_input").unwrap() };
+        handle_mouse_input(app, json_serialized);
+    }
+    
+    pub(crate) fn handle_mouse_move(&self, unwrap: *mut App, x: f64, y: f64) {
+        let handle_mouse_move: Symbol<extern "C" fn(*mut App, f64, f64)> = unsafe { self.lib.get(b"handle_mouse_move").unwrap() };
+        handle_mouse_move(unwrap, x, y);
+    }
 }

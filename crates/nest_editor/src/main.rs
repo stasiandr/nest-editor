@@ -5,6 +5,7 @@ pub mod test_systems;
 pub mod editor_app_utils;
 
 
+
 use bevy::prelude::*;
 use bevy::app::App;
 use user_project::user_app::{UserApp, UserAppState};
@@ -36,8 +37,6 @@ impl winit::application::ApplicationHandler for EditorApp {
     }
 
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
-        // let mut win_entity = self.editor_app.world_mut().entity_mut(self.main_window.editor_window_entity.unwrap());
-        // let mut win = win_entity.get_mut::<bevy::window::Window>().unwrap();
 
         match event {
             WindowEvent::Resized(size) => {
@@ -50,13 +49,23 @@ impl winit::application::ApplicationHandler for EditorApp {
 
             WindowEvent::CursorMoved { device_id: _, position } => {
                 self.handle_mouse_move(position);
+
+                if self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
+                    self.game_app.handle_mouse_move(position);
+                }
             }
             WindowEvent::MouseInput { state, button, .. } => {
-                self.editor_app.world_mut().send_event(bevy::input::mouse::MouseButtonInput {
+                let event = bevy::input::mouse::MouseButtonInput {
                     button: utils::convert_mouse_button(button),
                     state: utils::convert_element_state(state),
                     window: self.main_window.editor_window_entity.unwrap(),
-                });
+                };
+                
+                self.editor_app.world_mut().send_event(event);
+
+                if self.game_app.get_app_state().at_least(UserAppState::WindowPassedToGame) {
+                    self.game_app.handle_mouse_input(&event);
+                }
             }
 
             WindowEvent::KeyboardInput { event, .. } => {
@@ -73,6 +82,12 @@ impl winit::application::ApplicationHandler for EditorApp {
                         self.remove_raw_handle_wrapper();
 
                         self.game_app.pass_window(self.main_window.window_handle.clone().unwrap());
+
+                        let mut win_entity = self.editor_app.world_mut().entity_mut(self.main_window.editor_window_entity.unwrap());
+                        let win = win_entity.get_mut::<bevy::window::Window>().unwrap();
+                        let size = win.resolution.physical_size();
+                        let size = winit::dpi::PhysicalSize::new(size.x, size.y);
+                        self.game_app.handle_window_resize(size);
                     } else {
                         self.game_app.remove_window();
                         self.insert_raw_handle_wrapper();

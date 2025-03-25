@@ -92,6 +92,26 @@ impl UserApp {
 
         self.lib.as_ref().unwrap().handle_window_resize(self.app.unwrap(), size.width, size.height);
     }
+
+    pub fn handle_mouse_input(&self, mouse_input: &bevy::input::mouse::MouseButtonInput) {
+        if !self.state.at_least(UserAppState::WindowPassedToGame) {
+            panic!("Game app not built");
+        }
+
+        let json_serialized = serde_json::to_string(mouse_input).unwrap();
+        let cstr = std::ffi::CString::new(json_serialized).unwrap();
+        self.lib.as_ref().unwrap().handle_mouse_input(self.app.unwrap(), cstr.as_ptr());
+    }
+    
+    pub(crate) fn handle_mouse_move(&self, position: winit::dpi::PhysicalPosition<f64>)  {
+        if !self.state.at_least(UserAppState::WindowPassedToGame) {
+            panic!("Game app not built");
+        }
+
+        self.lib.as_ref().unwrap().handle_mouse_move(self.app.unwrap(), position.x, position.y);
+    }
+
+    
 }
 
 

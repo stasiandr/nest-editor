@@ -39,8 +39,6 @@ impl UserProject {
         let project_name = self.project_name();
         let uuid = Uuid::new_v4();
 
-        
-        // self.absolute_project_path().join("target/debug/")
         let new_path = temp_dir().join(format!("lib{project_name}_{uuid}.dylib"));
         std::fs::rename(self.generated_dylib_path(), &new_path).unwrap();
         new_path

@@ -91,3 +91,39 @@ pub unsafe extern "C" fn handle_window_resize(app: *mut bevy::app::App, x: u32, 
     win.resolution.set_physical_resolution(x, y);
 }
 
+/// # Safety
+/// I'm not in danger, I'm the danger
+#[no_mangle]
+pub unsafe extern "C" fn handle_mouse_input(app: *mut bevy::app::App, json_serialized: *const i8) {
+    let app = unsafe { app.as_mut().unwrap() };
+    let string = std::ffi::CStr::from_ptr(json_serialized);
+    let event = serde_json::from_str::<bevy::input::mouse::MouseButtonInput>(string.to_str().unwrap()).unwrap();
+    app.world_mut().send_event(event);
+}
+
+/// # Safety
+/// I'm not in danger, I'm the danger
+#[no_mangle]
+pub unsafe extern "C" fn handle_mouse_move(app: *mut bevy::app::App, x: f64, y: f64) {
+    let app = unsafe { app.as_mut().unwrap() };
+    
+    
+
+    let (entity, mut win) = app.world_mut().query::<(Entity, &mut bevy::window::Window)>().single_mut(app.world_mut());
+
+    let physical_position = bevy::math::DVec2::new(x, y);
+
+    let last_position = win.physical_cursor_position();
+    let delta = last_position.map(|last_pos| {
+        (physical_position.as_vec2() - last_pos) / win.resolution.scale_factor()
+    });
+
+    win.set_physical_cursor_position(Some(physical_position));
+    let position = (physical_position / win.resolution.scale_factor() as f64).as_vec2();
+    let event = bevy::window::CursorMoved {
+        window: entity,
+        position,
+        delta,
+    };
+    app.world_mut().send_event(event);
+}
