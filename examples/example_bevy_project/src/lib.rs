@@ -1,20 +1,12 @@
 use bevy::{prelude::*, render::RenderApp};
 
-use nest_editor_shared::set_window_handle_from_app_kit;
-use nest_editor_shared::remove_window_handle;
+use nest_editor_shared::*;
 
 #[no_mangle]
 pub extern "C" fn app_builder() -> *mut App {
     let mut app = App::new();
-    app.add_plugins(DefaultPlugins.build()
-        // .disable::<bevy::render::pipelined_rendering::PipelinedRenderingPlugin>()
-        .disable::<bevy::winit::WinitPlugin>()
-        .set(WindowPlugin {
-            primary_window: None,
-            exit_condition: bevy::window::ExitCondition::DontExit,
-            ..Default::default()
-        })
-    );
+    app.add_plugins(nest_editor_shared::default_plugins_without_windows());
+    app.add_plugins(nest_editor_shared::in_game_editor::InGameEditorPlugin);
 
     app.add_systems(Startup, setup);
     app.add_systems(Update, camera_rotate);

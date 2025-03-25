@@ -3239,6 +3239,8 @@ name = "nest_editor_shared"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_egui",
+ "egui_dock",
  "winit",
 ]
 
@@ -6063,18 +6065,3 @@ checksum = "99a5bab8d7dedf81405c4bb1f2b83ea057643d9cb28778cea9eecddeedd2e028"
 dependencies = [
  "zune-core",
 ]
-
-[[patch.unused]]
-name = "bevy_dev_tools"
-version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
-
-[[patch.unused]]
-name = "bevy_dylib"
-version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
-
-[[patch.unused]]
-name = "bevy_remote"
-version = "0.15.3"
-source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"

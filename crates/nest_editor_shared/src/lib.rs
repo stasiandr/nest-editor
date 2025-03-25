@@ -1,3 +1,7 @@
+pub mod in_game_editor;
+
+use bevy::prelude::PluginGroup;
+use in_game_editor::ReturnToEditor;
 use std::ptr::NonNull;
 
 use bevy::{app::Plugin, ecs::entity::Entity, window::RawHandleWrapper};
@@ -58,8 +62,32 @@ pub unsafe extern "C" fn remove_window_handle(app: *mut bevy::app::App) {
     app.world_mut().entity_mut(res).remove::<bevy::window::RawHandleWrapper>();
 }
 
-// let (res , _) = self.game_app.as_mut().unwrap().world_mut().query::<(Entity, &bevy::window::RawHandleWrapper)>().single(self.game_app.as_mut().unwrap().world_mut());
-                    // self.game_app.as_mut().unwrap().world_mut().entity_mut(res).remove::<bevy::window::RawHandleWrapper>();
+pub fn default_plugins_without_windows() -> bevy::app::PluginGroupBuilder {
+    bevy::DefaultPlugins.build()
+        // .disable::<bevy::render::pipelined_rendering::PipelinedRenderingPlugin>()
+        .disable::<bevy::winit::WinitPlugin>()
+        .set(bevy::window::WindowPlugin {
+            primary_window: None,
+            exit_condition: bevy::window::ExitCondition::DontExit,
+            ..Default::default()
+        })
+}
 
-//                     let (res , _) = self.editor_app.world_mut().query::<(Entity, &bevy::window::PrimaryWindow)>().single(self.editor_app.world_mut());
-//                     self.editor_app.world_mut().entity_mut(res).insert(self.window_handle.as_ref().unwrap().clone());
+/// # Safety
+/// I'm not in danger, I'm the danger
+#[no_mangle]
+pub unsafe extern "C" fn is_back_to_editor_requested(app: *mut bevy::app::App) -> bool {
+    let app = unsafe { app.as_mut().unwrap() };
+    let events = app.world().resource::<bevy::ecs::event::Events<ReturnToEditor>>();
+    !events.is_empty()
+}
+
+/// # Safety
+/// I'm not in danger, I'm the danger
+#[no_mangle]
+pub unsafe extern "C" fn handle_window_resize(app: *mut bevy::app::App, x: u32, y: u32) {
+    let app = unsafe { app.as_mut().unwrap() };
+    let mut win = app.world_mut().query::<&mut bevy::window::Window>().single_mut(app.world_mut());
+    win.resolution.set_physical_resolution(x, y);
+}
+

@@ -26,9 +26,9 @@ bevy_color = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "w
 bevy_core = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_core_pipeline = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_derive = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
-bevy_dev_tools = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+# bevy_dev_tools = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_diagnostic = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
-bevy_dylib = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+# bevy_dylib = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_ecs = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_encase_derive = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_gilrs = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
@@ -47,7 +47,7 @@ bevy_pbr = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "win
 bevy_picking = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_ptr = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_reflect = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
-bevy_remote = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
+# bevy_remote = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_render = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_scene = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
 bevy_sprite = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }
