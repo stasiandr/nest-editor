@@ -8,8 +8,8 @@ pub mod editor_app_utils;
 
 use bevy::prelude::*;
 use bevy::app::App;
+use nest_editor_shared::in_game_editor::OpenGame;
 use user_project::user_app::{UserApp, UserAppState};
-use winit::keyboard::Key;
 use winit::{event::WindowEvent, event_loop::{ActiveEventLoop, EventLoop}, window::{Window, WindowId}};
 
 
@@ -40,18 +40,18 @@ impl winit::application::ApplicationHandler for EditorApp {
 
         match event {
             WindowEvent::Resized(size) => {
-                self.handle_window_resize(size);
-
                 if self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
                     self.game_app.handle_window_resize(size);
+                } else {
+                    self.handle_window_resize(size);
                 }
             }
 
             WindowEvent::CursorMoved { device_id: _, position } => {
-                self.handle_mouse_move(position);
-
                 if self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
                     self.game_app.handle_mouse_move(position);
+                } else {
+                    self.handle_mouse_move(position);
                 }
             }
             WindowEvent::MouseInput { state, button, .. } => {
@@ -59,46 +59,17 @@ impl winit::application::ApplicationHandler for EditorApp {
                     button: utils::convert_mouse_button(button),
                     state: utils::convert_element_state(state),
                     window: self.main_window.editor_window_entity.unwrap(),
-                };
-                
-                self.editor_app.world_mut().send_event(event);
+                };    
 
                 if self.game_app.get_app_state().at_least(UserAppState::WindowPassedToGame) {
                     self.game_app.handle_mouse_input(&event);
+                } else {
+                    self.editor_app.world_mut().send_event(event);
                 }
             }
 
-            WindowEvent::KeyboardInput { event, .. } => {
-                if event.state.is_pressed() {
-                    return;
-                }
-
-                if let Key::Named(winit::keyboard::NamedKey::Tab) = event.logical_key {
-
-                    if self.game_app.get_app_state().is(UserAppState::Uninitialized) {
-                        self.game_app.load_lib(&self.user_project);
-                        self.game_app.build_app();
-
-                        self.remove_raw_handle_wrapper();
-
-                        self.game_app.pass_window(self.main_window.window_handle.clone().unwrap());
-
-                        let mut win_entity = self.editor_app.world_mut().entity_mut(self.main_window.editor_window_entity.unwrap());
-                        let win = win_entity.get_mut::<bevy::window::Window>().unwrap();
-                        let size = win.resolution.physical_size();
-                        let size = winit::dpi::PhysicalSize::new(size.x, size.y);
-                        self.game_app.handle_window_resize(size);
-                    } else {
-                        self.game_app.remove_window();
-                        self.insert_raw_handle_wrapper();
-
-                        self.game_app.kill_app();
-                        self.game_app.unload_lib();
-                    }
-                    
-
-                    println!("Switching targets");
-                }
+            WindowEvent::KeyboardInput { .. } => {
+                
             }
             WindowEvent::CloseRequested => {
                 println!("The close button was pressed; stopping");
@@ -110,7 +81,32 @@ impl winit::application::ApplicationHandler for EditorApp {
                     self.game_app.update_app();
                 } else {
                     self.editor_app.update();
-                }    
+                }
+
+                if self.game_app.is_back_to_editor_requested() {
+                    self.game_app.remove_window();
+                    self.insert_raw_handle_wrapper();
+                    self.game_app.kill_app();
+                    self.game_app.unload_lib();
+                }
+
+                let mut events = self.editor_app.world_mut().resource_mut::<bevy::ecs::event::Events<nest_editor_shared::in_game_editor::OpenGame>>();
+                if events.drain().count() != 0 {
+                    println!("Open game requested");
+                    self.game_app.load_lib(&self.user_project);
+                    self.game_app.build_app();
+
+                    self.remove_raw_handle_wrapper();
+
+                    self.game_app.pass_window(self.main_window.window_handle.clone().unwrap());
+
+                    let mut win_entity = self.editor_app.world_mut().entity_mut(self.main_window.editor_window_entity.unwrap());
+                    let win = win_entity.get_mut::<bevy::window::Window>().unwrap();
+                    let size = win.resolution.physical_size();
+                    let size = winit::dpi::PhysicalSize::new(size.x, size.y);
+                    self.game_app.handle_window_resize(size);
+                }
+
             
                 for w in self.windows.values() {
                     w.request_redraw();
@@ -132,6 +128,7 @@ fn main() {
     
     editor_app.add_systems(Startup, test_systems::setup);
     editor_app.add_systems(Update, test_systems::camera_rotate);
+    editor_app.add_event::<OpenGame>();
 
     editor_app.add_systems(
             PreStartup,

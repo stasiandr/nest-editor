@@ -79,7 +79,7 @@ impl UserApp {
 
     pub fn is_back_to_editor_requested(&self) -> bool {
         if !self.state.at_least(UserAppState::GameAppBuilt) {
-            panic!("Game app not built");
+            return false;
         }
 
         self.lib.as_ref().unwrap().is_back_to_editor_requested(self.app.unwrap())

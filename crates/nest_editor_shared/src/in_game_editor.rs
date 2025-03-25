@@ -4,6 +4,9 @@ use bevy::prelude::*;
 #[derive(Event)]
 pub struct ReturnToEditor;
 
+#[derive(Event, Default)]
+pub struct OpenGame;
+
 pub struct InGameEditorPlugin;
 
 impl Plugin for InGameEditorPlugin {
@@ -33,7 +36,7 @@ pub fn ui_example_system(
 
     let ui = |ctx: &bevy_egui::egui::Context| {
         bevy_egui::egui::Window::new("Hello").show(ctx, |ui| {
-            if (ui.button("Run game")).clicked() {
+            if (ui.button("Back to Editor")).clicked() {
                 switch_context_event.send(ReturnToEditor);
                 println!("Button clicked!");
             }

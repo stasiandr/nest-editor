@@ -37,7 +37,7 @@ pub fn camera_rotate(
     mut q: Query<(&mut Transform, &Camera3d)>,
 ) {
     for (mut t, _) in q.iter_mut() {
-        t.rotate(Quat::from_rotation_y(ops::sin_cos(time.elapsed_secs() + std::f32::consts::PI / 2.0).0 * 0.001));
+        t.rotate(Quat::from_rotation_y(ops::sin_cos(time.elapsed_secs() * 2.0 + std::f32::consts::PI / 2.0).0 * 0.002));
     }
 }
 

@@ -60,15 +60,15 @@ pub fn configure_context(mut egui_settings: Query<&mut bevy_egui::EguiContextSet
 }
 
 pub fn ui_example_system(
-    mut contexts: Query<(&mut bevy_egui::EguiContext, &mut bevy_egui::EguiInput, &mut bevy_egui::EguiFullOutput)>
+    mut contexts: Query<(&mut bevy_egui::EguiContext, &mut bevy_egui::EguiInput, &mut bevy_egui::EguiFullOutput)>,
+    mut open_game: EventWriter<nest_editor_shared::in_game_editor::OpenGame>,
 ) {
     let (mut ctx, mut egui_input, mut egui_full_output) = contexts.single_mut();
 
     let ui = |ctx: &bevy_egui::egui::Context| {
         bevy_egui::egui::Window::new("Hello").show(ctx, |ui| {
-            
             if (ui.button("Run game")).clicked() {
-                println!("Button clicked!");
+                open_game.send_default();
             }
         });
     };
