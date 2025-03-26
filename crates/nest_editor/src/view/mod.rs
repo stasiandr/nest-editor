@@ -1,5 +1,6 @@
 use bevy::prelude::*;
-use bevy_egui::egui::{self, CornerRadius};
+use bevy_egui::egui::{self, Frame, Ui};
+use bevy_inspector_egui::bevy_inspector::hierarchy::SelectedEntities;
 use egui_dock::{DockState, NodeIndex};
 
 #[derive(Default)]
@@ -9,12 +10,14 @@ impl Plugin for NestEditorViewPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_resource(UiState::default())
+
             .add_systems(Update, editor_ui_update)
-            .add_systems(Update, set_camera_viewport);
+            .add_systems(Update, set_camera_viewport)
+            .add_plugins(bevy_inspector_egui::DefaultInspectorConfigPlugin);
     }
 }
 
-pub fn editor_ui_update(
+pub fn editor_ui_install(
     world: &mut World
 ) {
     let Ok(egui_context) = world
@@ -23,11 +26,67 @@ pub fn editor_ui_update(
     else {
         return;
     };
-    let mut egui_context = egui_context.clone();
 
-    world.resource_scope::<UiState, _>(|world, mut ui_state| {
-        ui_state.ui(world, egui_context.get_mut())
-    });
+    let mut ctx = egui_context.clone();
+    let _ctx = ctx.get_mut();
+}
+
+pub fn editor_ui_update(
+    world: &mut World,
+) {
+    let Ok(egui_context) = world
+        .query_filtered::<&mut bevy_egui::EguiContext, With<bevy::window::PrimaryWindow>>()
+        .get_single(world)
+    else {
+        return;
+    };
+
+
+    let mut ctx = egui_context.clone();
+    egui_extras::install_image_loaders(ctx.get_mut());
+
+    let mut dock_style = egui_dock::Style::from_egui(&ctx.get_mut().style());
+
+    dock_style.separator.width = 1.0;
+    dock_style.tab_bar.corner_radius = egui::CornerRadius::from(16); 
+    dock_style.tab_bar.fill_tab_bar = true;
+
+    egui::TopBottomPanel::top("top_panel")
+        .exact_height(32.0)
+        .max_height(32.0)
+        .min_height(32.0)
+        .frame(Frame::NONE)
+        .show(ctx.get_mut(), |ui| {
+            let egui_icon = egui::include_image!("../../../content/icons/right.png");
+
+            // Get the available screen size
+            let screen_rect = ui.max_rect();
+
+            // Desired size of your button UI
+            let desired_size = egui::Vec2::new(64.0, 16.0);
+
+            // Calculate the top-left corner of the button to be centered
+            let pos = screen_rect.center() - desired_size / 2.0;
+
+            ui.allocate_new_ui(
+                egui::UiBuilder::new().max_rect(egui::Rect::from_min_size(pos, desired_size)),
+                |ui| {
+                    if ui.add(egui::Button::image_and_text(egui_icon, "Play")).clicked() {
+                        world.send_event_default::<nest_editor_shared::in_game_editor::OpenGame>();
+                    }
+                },
+            );
+        });
+
+    egui::CentralPanel::default()
+        .frame(Frame::NONE)
+        .show(ctx.get_mut(), |ui| {
+            world.resource_scope::<UiState, _>(|world, mut ui_state| { 
+                ui_state.ui(world, ui, dock_style);
+            });
+        });
+
+    
 }
 
 
@@ -96,7 +155,7 @@ pub struct UiState {
 
 #[derive(Resource)]
 pub struct TabViewer<'a> {
-    _world: &'a mut World,
+    world: &'a mut World,
     viewport_rect: &'a mut egui::Rect,
 }
 
@@ -117,7 +176,8 @@ impl egui_dock::TabViewer for TabViewer<'_> {
                 ui.label("Inspector");
             }
             WindowType::World => {
-                ui.label("World");
+                bevy_inspector_egui::bevy_inspector::hierarchy::hierarchy_ui(self.world, ui, &mut SelectedEntities::default());
+                // bevy_inspector_egui::bevy_inspector::ui_for_entities(self.world, ui);
             }
             WindowType::_Custom(t) => {
                 ui.label(format!("Custom tab: {}", t));
@@ -157,9 +217,9 @@ impl Default for UiState {
 }
 
 impl UiState {
-    pub fn ui(&mut self, world: &mut World, ctx: &mut egui::Context) {
+    pub fn ui(&mut self, world: &mut World, ui: &mut Ui, style: egui_dock::Style) {
         let mut tab_viewer = TabViewer {
-            _world: world,
+            world,
             viewport_rect: &mut self.viewport_rect,
         };
 
@@ -176,18 +236,10 @@ impl UiState {
             node.set_collapsed(true);
         }
 
-        
-
-        let mut style = egui_dock::Style::from_egui(&ctx.style());
-
-        style.separator.width = 1.0;
-        style.tab_bar.corner_radius = CornerRadius::from(8); 
-        style.tab_bar.fill_tab_bar = true;
-
         egui_dock::DockArea::new(&mut self.state)
             .style(style)
             .show_leaf_collapse_buttons(false)
             .show_leaf_close_all_buttons(false)
-            .show(ctx, &mut tab_viewer);
+            .show_inside(ui, &mut tab_viewer);
     }
 }
