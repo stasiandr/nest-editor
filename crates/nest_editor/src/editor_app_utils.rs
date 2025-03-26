@@ -34,6 +34,28 @@ impl crate::EditorApp {
         win.resolution.set_physical_resolution(size.width, size.height);
     }
 
+    pub fn handle_scale_factor_changed(&mut self, scale_factor: f64) {
+        let mut window_entity = self.editor_app.world_mut().entity_mut(self.main_window.editor_window_entity.unwrap());
+        let mut window = window_entity.get_mut::<bevy::window::Window>().unwrap();
+
+        window.resolution.set_scale_factor(scale_factor as f32);
+
+        // self.editor_app.world_mut().send_event(WindowBackendScaleFactorChanged {
+        //     window: window_entity,
+        //     scale_factor,
+        // });
+
+        // let prior_factor = window.resolution.scale_factor();
+        // let scale_factor_override = window.resolution.scale_factor_override();
+
+        // if scale_factor_override.is_none() && !relative_eq!(scale_factor as f32, prior_factor) {
+        //     self.editor_app.world_mut().send_event(WindowScaleFactorChanged {
+        //         window: window_entity,
+        //         scale_factor,
+        //     });
+        // }
+    }
+
     pub fn insert_window_into_editor_app(&mut self, window: Window) {
         let main_window_id = window.id();
 

@@ -51,29 +51,3 @@ pub fn camera_rotate(
         t.rotate(Quat::from_rotation_y(ops::sin_cos(time.elapsed_secs() + PI / 2.0).0 * 0.001));
     }
 }
-
-
-pub fn configure_context(mut egui_settings: Query<&mut bevy_egui::EguiContextSettings>) {
-    for mut es in egui_settings.iter_mut() {
-        es.run_manually = true;
-    }
-}
-
-pub fn ui_example_system(
-    mut contexts: Query<(&mut bevy_egui::EguiContext, &mut bevy_egui::EguiInput, &mut bevy_egui::EguiFullOutput)>,
-    mut open_game: EventWriter<nest_editor_shared::in_game_editor::OpenGame>,
-) {
-    let (mut ctx, mut egui_input, mut egui_full_output) = contexts.single_mut();
-
-    let ui = |ctx: &bevy_egui::egui::Context| {
-        bevy_egui::egui::Window::new("Hello").show(ctx, |ui| {
-            if (ui.button("Run game")).clicked() {
-                open_game.send_default();
-            }
-        });
-    };
-
-    let ctx = ctx.get_mut();
-
-    **egui_full_output = Some(ctx.run(egui_input.take(), ui));
-}

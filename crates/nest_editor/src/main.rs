@@ -39,19 +39,22 @@ impl winit::application::ApplicationHandler for EditorApp {
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
 
         match event {
+            WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
+                self.handle_scale_factor_changed(scale_factor);
+            }
             WindowEvent::Resized(size) => {
-                if self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
-                    self.game_app.handle_window_resize(size);
-                } else {
+                if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
                     self.handle_window_resize(size);
+                } else {
+                    self.game_app.handle_window_resize(size);
                 }
             }
 
             WindowEvent::CursorMoved { device_id: _, position } => {
-                if self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
-                    self.game_app.handle_mouse_move(position);
-                } else {
+                if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
                     self.handle_mouse_move(position);
+                } else {
+                    self.game_app.handle_mouse_move(position);
                 }
             }
             WindowEvent::MouseInput { state, button, .. } => {
@@ -61,13 +64,12 @@ impl winit::application::ApplicationHandler for EditorApp {
                     window: self.main_window.editor_window_entity.unwrap(),
                 };    
 
-                if self.game_app.get_app_state().at_least(UserAppState::WindowPassedToGame) {
-                    self.game_app.handle_mouse_input(&event);
-                } else {
+                if !self.game_app.get_app_state().at_least(UserAppState::WindowPassedToGame) {
                     self.editor_app.world_mut().send_event(event);
+                } else {
+                    self.game_app.handle_mouse_input(&event);
                 }
             }
-
             WindowEvent::KeyboardInput { .. } => {
                 
             }
@@ -129,12 +131,7 @@ fn main() {
     editor_app.add_systems(Startup, test_systems::setup);
     editor_app.add_systems(Update, test_systems::camera_rotate);
     editor_app.add_event::<OpenGame>();
-
-    editor_app.add_systems(
-            PreStartup,
-            test_systems::configure_context.after(bevy_egui::EguiStartupSet::InitContexts),
-        )
-        .add_systems(Update, test_systems::ui_example_system);
+    editor_app.add_plugins(view::NestEditorViewPlugin);
 
     let mut winit_app = EditorApp {
         editor_app,
