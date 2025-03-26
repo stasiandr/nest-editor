@@ -5,7 +5,9 @@ pub mod editor_app_utils;
 
 
 
-use bevy::prelude::*;
+use bevy::core_pipeline::bloom::BloomPlugin;
+use bevy::core_pipeline::dof::{DepthOfField, DepthOfFieldPlugin};
+use bevy::{core_pipeline::tonemapping::TonemappingPlugin, prelude::*};
 use bevy::app::App;
 use nest_editor_shared::in_game_editor::OpenGame;
 use user_project::user_app::{UserApp, UserAppState};
@@ -154,6 +156,10 @@ fn main() {
     editor_app.add_plugins(bevy_egui::EguiPlugin);
     
     editor_app.add_systems(Startup, test_systems::setup);
+    editor_app.insert_resource(AmbientLight {
+        brightness: 0.5,
+        color: Color::WHITE,
+    });
     editor_app.add_event::<OpenGame>();
     editor_app.add_plugins(nest_editor_shared::view::NestEditorViewPlugin);
 

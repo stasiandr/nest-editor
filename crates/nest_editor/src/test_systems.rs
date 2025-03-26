@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{core_pipeline::experimental::taa::TemporalAntiAliasing, prelude::*};
 
 pub fn setup(
     mut commands: Commands,
@@ -19,11 +19,17 @@ pub fn setup(
     
     // light
     commands.spawn((
-        PointLight {
+        DirectionalLight {
             shadows_enabled: true,
+            illuminance: 1000.0,
             ..default()
         },
-        Transform::from_xyz(4.0, 8.0, 4.0),
+        Transform::from_rotation(Quat::from_euler(
+            EulerRot::ZYX,
+            0.0,
+            std::f32::consts::PI * 0.15,
+            std::f32::consts::PI * -0.15,
+        )),
     ));
 
     let window = q.single().0;
@@ -33,8 +39,13 @@ pub fn setup(
         Camera3d::default(),
         Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
         Camera {
+            hdr: true,
             target: bevy::render::camera::RenderTarget::Window(bevy::window::WindowRef::Entity(window)),
             ..Default::default()
-        }
+        },
+        bevy::pbr::ScreenSpaceAmbientOcclusion::default(),
+        TemporalAntiAliasing::default(),
+        bevy::core_pipeline::tonemapping::Tonemapping::BlenderFilmic,
+        bevy::core_pipeline::bloom::Bloom::NATURAL,
     ));
 }

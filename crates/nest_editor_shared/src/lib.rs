@@ -59,7 +59,6 @@ pub unsafe extern "C" fn remove_window_handle(app: *mut bevy::app::App) {
 
 pub fn default_plugins_without_windows() -> bevy::app::PluginGroupBuilder {
     bevy::DefaultPlugins.build()
-        // .disable::<bevy::render::pipelined_rendering::PipelinedRenderingPlugin>()
         .disable::<bevy::winit::WinitPlugin>()
         .disable::<LogPlugin>()
         .set(bevy::window::WindowPlugin {
