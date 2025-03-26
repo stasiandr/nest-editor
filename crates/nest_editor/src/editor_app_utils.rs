@@ -56,6 +56,30 @@ impl crate::EditorApp {
         // }
     }
 
+    pub fn handle_mouse_wheel(&mut self, delta: winit::event::MouseScrollDelta) {
+
+        match delta {
+            winit::event::MouseScrollDelta::LineDelta(x, y) => {
+                let event = bevy::input::mouse::MouseWheel {
+                    unit: bevy::input::mouse::MouseScrollUnit::Line,
+                    x,
+                    y,
+                    window: self.main_window.editor_window_entity.unwrap(),
+                };
+                self.editor_app.world_mut().send_event(event);
+            }
+            winit::event::MouseScrollDelta::PixelDelta(p) => {
+                let event = bevy::input::mouse::MouseWheel {
+                    unit: bevy::input::mouse::MouseScrollUnit::Pixel,
+                    x: p.x as f32,
+                    y: p.y as f32,
+                    window: self.main_window.editor_window_entity.unwrap(),
+                };
+                self.editor_app.world_mut().send_event(event);
+            }
+        }
+    }
+
     pub fn insert_window_into_editor_app(&mut self, window: Window) {
         let main_window_id = window.id();
 

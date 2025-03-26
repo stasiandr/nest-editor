@@ -37,6 +37,7 @@ impl UserLibWrapper {
         update_app(app);
     }
 
+    // TODO make macros for those
     pub fn set_window_handle_from_app_kit(&self, app: *mut App, app_kit_handle: *mut std::ffi::c_void) {
         let set_window_handle_from_app_kit: Symbol<extern "C" fn(*mut App, *mut std::ffi::c_void)> = unsafe { self.lib.get(b"set_window_handle_from_app_kit").unwrap() };
         set_window_handle_from_app_kit(app, app_kit_handle);
@@ -70,5 +71,10 @@ impl UserLibWrapper {
     pub(crate) fn handle_scale_factor_changed(&self, unwrap: *mut App, scale_factor: f64) {
         let handle_scale_factor_changed: Symbol<extern "C" fn(*mut App, f64)> = unsafe { self.lib.get(b"handle_scale_factor_changed").unwrap() };
         handle_scale_factor_changed(unwrap, scale_factor);
+    }
+    
+    pub(crate) fn handle_mouse_wheel(&self, unwrap: *mut App, x: f64, y: f64, is_line: bool) {
+        let handle_mouse_wheel: Symbol<extern "C" fn(*mut App, f64, f64, bool)> = unsafe { self.lib.get(b"handle_mouse_wheel").unwrap() };
+        handle_mouse_wheel(unwrap, x, y, is_line);
     }
 }

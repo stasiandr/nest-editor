@@ -26,6 +26,10 @@ impl Plugin for NestEditorViewPlugin {
             })
             .add_plugins(bevy_inspector_egui::DefaultInspectorConfigPlugin);
     }
+
+    fn cleanup(&self, _app: &mut App) {
+        egui_logger::builder().init().unwrap();
+    }
 }
 
 pub fn editor_ui_install(
@@ -85,8 +89,10 @@ pub fn editor_ui_update(
 
                     if ui.add(button).clicked() {
                         if is_in_game_editor {
+                            log::info!("Return to editor requested");
                             world.send_event_default::<crate::in_game_editor::ReturnToEditor>();
                         } else {
+                            log::info!("Open game requested");
                             world.send_event_default::<crate::in_game_editor::OpenGame>();
                         }
                     }
@@ -229,7 +235,7 @@ impl egui_dock::TabViewer for TabViewer<'_> {
                 show_project_ui(ui, &project_path.path);
             },
             WindowType::Console => {
-
+                egui_logger::logger_ui().show(ui);
             }
         }
     }
@@ -359,7 +365,7 @@ impl Default for UiState {
         let tree = state.main_surface_mut();
         let [game, _inspector] = tree.split_right(NodeIndex::root(), 0.7, vec![ WindowType::Inspector ]);
         let [world, game] = tree.split_left(game, 0.4, vec![ WindowType::World, WindowType::Assets, WindowType::Resources ]);
-        let [_game, _console] = tree.split_below(world, 0.7, vec![ WindowType::Console ]);
+        let [_game, _console] = tree.split_below(world, 0.5, vec![ WindowType::Console ]); // TODO fix naming
         let [_world, _project] = tree.split_below(game, 0.7, vec![ WindowType::Project ]);
 
         Self { 

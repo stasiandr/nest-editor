@@ -1,7 +1,7 @@
 pub mod in_game_editor;
 pub mod view;
 
-use bevy::prelude::PluginGroup;
+use bevy::{log::LogPlugin, prelude::PluginGroup};
 use in_game_editor::ReturnToEditor;
 use std::ptr::NonNull;
 
@@ -15,12 +15,6 @@ impl Plugin for NestEditorSharedPlugin {
         println!("Nest editor is installed!")
     }
 }
-
-#[no_mangle]
-pub extern "C" fn test() {
-    println!("Hello from nest_editor_shared!");
-}
-
 
 pub fn handle_wrapper_from_app_kit(app_kit_handle: *mut std::ffi::c_void) -> RawHandleWrapper {
     let ns_view = app_kit_handle;
@@ -67,6 +61,7 @@ pub fn default_plugins_without_windows() -> bevy::app::PluginGroupBuilder {
     bevy::DefaultPlugins.build()
         // .disable::<bevy::render::pipelined_rendering::PipelinedRenderingPlugin>()
         .disable::<bevy::winit::WinitPlugin>()
+        .disable::<LogPlugin>()
         .set(bevy::window::WindowPlugin {
             primary_window: None,
             exit_condition: bevy::window::ExitCondition::DontExit,
@@ -134,4 +129,22 @@ pub unsafe extern "C" fn handle_scale_factor_changed(app: *mut bevy::app::App, s
     let app = unsafe { app.as_mut().unwrap() };
     let mut win = app.world_mut().query::<&mut bevy::window::Window>().single_mut(app.world_mut());
     win.resolution.set_scale_factor(scale_factor as f32);
+}
+
+/// # Safety
+/// I'm not in danger, I'm the danger
+#[no_mangle]
+pub unsafe extern "C" fn handle_mouse_wheel(app: *mut bevy::app::App, x: f64, y: f64, is_line: bool) {
+    let app = unsafe { app.as_mut().unwrap() };
+
+    let (window, _) = app.world_mut().query::<(Entity, &bevy::window::Window)>().single_mut(app.world_mut());
+
+    let event = bevy::input::mouse::MouseWheel {
+        unit: if is_line { bevy::input::mouse::MouseScrollUnit::Line } else { bevy::input::mouse::MouseScrollUnit::Pixel },
+        x: x as f32,
+        y: y as f32,
+        window,
+    };
+
+    app.world_mut().send_event(event);
 }

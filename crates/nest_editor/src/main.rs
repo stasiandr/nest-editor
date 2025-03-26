@@ -21,6 +21,7 @@ pub struct EditorApp {
     pub windows: bevy::utils::HashMap<WindowId, bevy::window::WindowWrapper<Window>>,
 }
 
+
 #[derive(Default)]
 struct MainWindow {
     editor_window_entity: Option<Entity>,
@@ -38,6 +39,18 @@ impl winit::application::ApplicationHandler for EditorApp {
     fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
 
         match event {
+            WindowEvent::MouseWheel { delta, .. } => {
+                if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
+                    self.handle_mouse_wheel(delta);
+                } else {
+                    self.game_app.handle_mouse_wheel(delta);
+                }
+
+
+
+                // log::info!("Mouse move");
+                // println!("log");
+            }
             WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
                 if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
                     self.handle_scale_factor_changed(scale_factor);

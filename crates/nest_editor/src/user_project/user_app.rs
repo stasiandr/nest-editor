@@ -118,6 +118,26 @@ impl UserApp {
 
         self.lib.as_ref().unwrap().handle_mouse_move(self.app.unwrap(), position.x, position.y);
     }
+    
+    pub(crate) fn handle_mouse_wheel(&self, delta: winit::event::MouseScrollDelta) {
+        if !self.state.at_least(UserAppState::WindowPassedToGame) {
+            panic!("Game app not built");
+        }
+
+        let x = match delta {
+            winit::event::MouseScrollDelta::LineDelta(x, _) => x as f64,
+            winit::event::MouseScrollDelta::PixelDelta(physical_position) => physical_position.x,
+        };
+
+        let y = match delta {
+            winit::event::MouseScrollDelta::LineDelta(_, y) => y as f64,
+            winit::event::MouseScrollDelta::PixelDelta(physical_position) => physical_position.y,
+        };
+
+        let is_line = matches!(delta, winit::event::MouseScrollDelta::LineDelta(_, _));
+        
+        self.lib.as_ref().unwrap().handle_mouse_wheel(self.app.unwrap(), x, y, is_line);
+    }
 
     
 }
