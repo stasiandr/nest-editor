@@ -1,4 +1,3 @@
-pub mod view;
 pub mod user_project;
 pub mod utils;
 pub mod test_systems;
@@ -40,7 +39,11 @@ impl winit::application::ApplicationHandler for EditorApp {
 
         match event {
             WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
-                self.handle_scale_factor_changed(scale_factor);
+                if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
+                    self.handle_scale_factor_changed(scale_factor);
+                } else {
+                    self.game_app.handle_scale_factor_changed(scale_factor);
+                }
             }
             WindowEvent::Resized(size) => {
                 if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
@@ -90,6 +93,14 @@ impl winit::application::ApplicationHandler for EditorApp {
                     self.insert_raw_handle_wrapper();
                     self.game_app.kill_app();
                     self.game_app.unload_lib();
+
+                    let mut win_entity = self.editor_app.world_mut().entity_mut(self.main_window.editor_window_entity.unwrap());
+                    let win = win_entity.get_mut::<bevy::window::Window>().unwrap();
+                    let size = win.resolution.physical_size();
+                    let size = winit::dpi::PhysicalSize::new(size.x, size.y);
+                    let scale_factor = win.resolution.scale_factor().into();
+                    self.handle_scale_factor_changed(scale_factor);
+                    self.handle_window_resize(size);
                 }
 
                 let mut events = self.editor_app.world_mut().resource_mut::<bevy::ecs::event::Events<nest_editor_shared::in_game_editor::OpenGame>>();
@@ -107,6 +118,7 @@ impl winit::application::ApplicationHandler for EditorApp {
                     let size = win.resolution.physical_size();
                     let size = winit::dpi::PhysicalSize::new(size.x, size.y);
                     self.game_app.handle_window_resize(size);
+                    self.game_app.handle_scale_factor_changed(win.resolution.scale_factor().into());
                 }
 
             
@@ -131,7 +143,7 @@ fn main() {
     editor_app.add_systems(Startup, test_systems::setup);
     editor_app.add_systems(Update, test_systems::camera_rotate);
     editor_app.add_event::<OpenGame>();
-    editor_app.add_plugins(view::NestEditorViewPlugin);
+    editor_app.add_plugins(nest_editor_shared::view::NestEditorViewPlugin);
 
     let mut winit_app = EditorApp {
         editor_app,

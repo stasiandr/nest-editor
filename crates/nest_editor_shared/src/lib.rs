@@ -1,4 +1,5 @@
 pub mod in_game_editor;
+pub mod view;
 
 use bevy::prelude::PluginGroup;
 use in_game_editor::ReturnToEditor;
@@ -106,8 +107,6 @@ pub unsafe extern "C" fn handle_mouse_input(app: *mut bevy::app::App, json_seria
 #[no_mangle]
 pub unsafe extern "C" fn handle_mouse_move(app: *mut bevy::app::App, x: f64, y: f64) {
     let app = unsafe { app.as_mut().unwrap() };
-    
-    
 
     let (entity, mut win) = app.world_mut().query::<(Entity, &mut bevy::window::Window)>().single_mut(app.world_mut());
 
@@ -126,4 +125,13 @@ pub unsafe extern "C" fn handle_mouse_move(app: *mut bevy::app::App, x: f64, y: 
         delta,
     };
     app.world_mut().send_event(event);
+}
+
+/// # Safety
+/// I'm not in danger, I'm the danger
+#[no_mangle]
+pub unsafe extern "C" fn handle_scale_factor_changed(app: *mut bevy::app::App, scale_factor: f64) {
+    let app = unsafe { app.as_mut().unwrap() };
+    let mut win = app.world_mut().query::<&mut bevy::window::Window>().single_mut(app.world_mut());
+    win.resolution.set_scale_factor(scale_factor as f32);
 }

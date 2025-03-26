@@ -93,6 +93,14 @@ impl UserApp {
         self.lib.as_ref().unwrap().handle_window_resize(self.app.unwrap(), size.width, size.height);
     }
 
+    pub fn handle_scale_factor_changed(&self, scale_factor: f64) {
+        if !self.state.at_least(UserAppState::WindowPassedToGame) {
+            panic!("Game app not built");
+        }
+
+        self.lib.as_ref().unwrap().handle_scale_factor_changed(self.app.unwrap(), scale_factor);
+    }
+
     pub fn handle_mouse_input(&self, mouse_input: &bevy::input::mouse::MouseButtonInput) {
         if !self.state.at_least(UserAppState::WindowPassedToGame) {
             panic!("Game app not built");

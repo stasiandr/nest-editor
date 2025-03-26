@@ -66,4 +66,9 @@ impl UserLibWrapper {
         let handle_mouse_move: Symbol<extern "C" fn(*mut App, f64, f64)> = unsafe { self.lib.get(b"handle_mouse_move").unwrap() };
         handle_mouse_move(unwrap, x, y);
     }
+    
+    pub(crate) fn handle_scale_factor_changed(&self, unwrap: *mut App, scale_factor: f64) {
+        let handle_scale_factor_changed: Symbol<extern "C" fn(*mut App, f64)> = unsafe { self.lib.get(b"handle_scale_factor_changed").unwrap() };
+        handle_scale_factor_changed(unwrap, scale_factor);
+    }
 }

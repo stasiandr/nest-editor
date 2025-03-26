@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_egui::egui::{self, Frame, Ui};
+use bevy_egui::egui::{self, include_image, Frame, Ui};
 use bevy_inspector_egui::bevy_inspector::hierarchy::SelectedEntities;
 use egui_dock::{DockState, NodeIndex};
 
@@ -10,7 +10,6 @@ impl Plugin for NestEditorViewPlugin {
     fn build(&self, app: &mut App) {
         app
             .insert_resource(UiState::default())
-
             .add_systems(Update, editor_ui_update)
             .add_systems(Update, set_camera_viewport)
             .add_plugins(bevy_inspector_egui::DefaultInspectorConfigPlugin);
@@ -57,22 +56,27 @@ pub fn editor_ui_update(
         .min_height(32.0)
         .frame(Frame::NONE)
         .show(ctx.get_mut(), |ui| {
-            let egui_icon = egui::include_image!("../../../content/icons/right.png");
 
-            // Get the available screen size
-            let screen_rect = ui.max_rect();
 
-            // Desired size of your button UI
             let desired_size = egui::Vec2::new(64.0, 16.0);
-
-            // Calculate the top-left corner of the button to be centered
-            let pos = screen_rect.center() - desired_size / 2.0;
+            let pos = ui.max_rect().center() - desired_size / 2.0;
 
             ui.allocate_new_ui(
                 egui::UiBuilder::new().max_rect(egui::Rect::from_min_size(pos, desired_size)),
                 |ui| {
-                    if ui.add(egui::Button::image_and_text(egui_icon, "Play")).clicked() {
-                        world.send_event_default::<nest_editor_shared::in_game_editor::OpenGame>();
+                    let is_in_game_editor = world.get_resource::<crate::in_game_editor::InGameEditorData>().is_some();
+                    let button = if is_in_game_editor {
+                        egui::Button::image_and_text(include_image!("../icons/stop.png"), "Stop")
+                    } else {
+                        egui::Button::image_and_text(include_image!("../icons/right.png"), "Play")
+                    };
+
+                    if ui.add(button).clicked() {
+                        if is_in_game_editor {
+                            world.send_event_default::<crate::in_game_editor::ReturnToEditor>();
+                        } else {
+                            world.send_event_default::<crate::in_game_editor::OpenGame>();
+                        }
                     }
                 },
             );

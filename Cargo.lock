@@ -3402,8 +3402,11 @@ name = "nest_editor_shared"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy-inspector-egui",
  "bevy_egui",
  "egui_dock",
+ "egui_extras",
+ "image",
  "serde_json",
  "winit",
 ]
