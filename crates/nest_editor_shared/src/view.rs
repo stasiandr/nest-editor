@@ -1,10 +1,19 @@
+use std::{collections::BTreeMap, path::{Path, PathBuf}};
+
 use bevy::prelude::*;
 use bevy_egui::egui::{self, include_image, Frame, Ui};
 use bevy_inspector_egui::bevy_inspector::hierarchy::SelectedEntities;
 use egui_dock::{DockState, NodeIndex};
+use egui_ltreeview::{TreeView, TreeViewBuilder};
+use ignore::WalkBuilder;
 
 #[derive(Default)]
 pub struct NestEditorViewPlugin;
+
+#[derive(Default, Resource)]
+pub struct ProjectPath {
+    pub path: PathBuf,
+}
 
 impl Plugin for NestEditorViewPlugin {
     fn build(&self, app: &mut App) {
@@ -12,6 +21,9 @@ impl Plugin for NestEditorViewPlugin {
             .insert_resource(UiState::default())
             .add_systems(Update, editor_ui_update)
             .add_systems(Update, set_camera_viewport)
+            .insert_resource(ProjectPath {
+                path: PathBuf::from("."),
+            })
             .add_plugins(bevy_inspector_egui::DefaultInspectorConfigPlugin);
     }
 }
@@ -49,6 +61,8 @@ pub fn editor_ui_update(
     dock_style.separator.width = 1.0;
     dock_style.tab_bar.corner_radius = egui::CornerRadius::from(16); 
     dock_style.tab_bar.fill_tab_bar = true;
+    dock_style.main_surface_border_rounding = egui::CornerRadius::from(16);
+    // dock_style.tab.inactive.bg_fill = egui::Color32::from_rgba_premultiplied(0, 0, 0, 0);
 
     egui::TopBottomPanel::top("top_panel")
         .exact_height(32.0)
@@ -56,8 +70,6 @@ pub fn editor_ui_update(
         .min_height(32.0)
         .frame(Frame::NONE)
         .show(ctx.get_mut(), |ui| {
-
-
             let desired_size = egui::Vec2::new(64.0, 16.0);
             let pos = ui.max_rect().center() - desired_size / 2.0;
 
@@ -114,14 +126,9 @@ fn set_camera_viewport(
     let physical_position = UVec2::new(viewport_pos.x as u32, viewport_pos.y as u32);
     let physical_size = UVec2::new(viewport_size.x as u32, viewport_size.y as u32);
 
-    // The desired viewport rectangle at its offset in "physical pixel space"
     let rect = physical_position + physical_size;
 
     let window_size = window.physical_size();
-    // wgpu will panic if trying to set a viewport rect which has coordinates extending
-    // past the size of the render target, i.e. the physical window in our case.
-    // Typically this shouldn't happen- but during init and resizing etc. edge cases might occur.
-    // Simply do nothing in those cases.
     if rect.x <= window_size.x && rect.y <= window_size.y {
         cam.viewport = Some(bevy::render::camera::Viewport {
             physical_position,
@@ -136,6 +143,10 @@ pub enum WindowType {
     Inspector,
     Viewport,
     World,
+    Assets,
+    Resources,
+    Project,
+    Console,
     _Custom(String),
 }
 
@@ -146,6 +157,10 @@ impl From<&WindowType> for String {
             WindowType::Viewport => "Scene".to_string(),
             WindowType::World => "World".to_string(),
             WindowType::_Custom(name) => name.to_string(),
+            WindowType::Assets => "Assets".to_string(),
+            WindowType::Resources => "Resources".to_string(),
+            WindowType::Project => "Project".to_string(),
+            WindowType::Console => "Console".to_string(),
         }
     }
 }
@@ -155,20 +170,33 @@ impl From<&WindowType> for String {
 pub struct UiState {
     state: DockState<WindowType>,
     viewport_rect: egui::Rect,
+    selected_entities: SelectedEntities,
 }
 
 #[derive(Resource)]
 pub struct TabViewer<'a> {
     world: &'a mut World,
     viewport_rect: &'a mut egui::Rect,
+    selected_entities: &'a mut SelectedEntities,
 }
 
 impl egui_dock::TabViewer for TabViewer<'_> {
     type Tab = WindowType;
 
     fn title(&mut self, tab: &mut Self::Tab) -> egui::WidgetText {
+        if let WindowType::Viewport = tab {
+            if self.world.get_resource::<crate::in_game_editor::InGameEditorData>().is_some() {
+                return "Game".into()
+            } else {
+                return "Scene".into()
+            }
+        }
         let name :String = (&*tab).into();
         name.into()
+    }
+
+    fn clear_background(&self, tab: &Self::Tab) -> bool {
+        !matches!(tab, WindowType::Viewport)
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, tab: &mut Self::Tab) {
@@ -177,14 +205,31 @@ impl egui_dock::TabViewer for TabViewer<'_> {
                 *self.viewport_rect = ui.clip_rect();
             }
             WindowType::Inspector => {
-                ui.label("Inspector");
+                if self.selected_entities.len() == 1 {
+                    let entity = self.selected_entities.as_slice()[0];
+                    bevy_inspector_egui::bevy_inspector::ui_for_entity(self.world, entity, ui);
+                } else {
+                    bevy_inspector_egui::bevy_inspector::ui_for_entities_shared_components(self.world, self.selected_entities.as_slice(), ui);
+                }
             }
             WindowType::World => {
-                bevy_inspector_egui::bevy_inspector::hierarchy::hierarchy_ui(self.world, ui, &mut SelectedEntities::default());
-                // bevy_inspector_egui::bevy_inspector::ui_for_entities(self.world, ui);
+                bevy_inspector_egui::bevy_inspector::hierarchy::hierarchy_ui(self.world, ui, self.selected_entities);
             }
             WindowType::_Custom(t) => {
                 ui.label(format!("Custom tab: {}", t));
+            }
+            WindowType::Assets => {
+                bevy_inspector_egui::bevy_inspector::ui_for_all_assets(self.world, ui);
+            },
+            WindowType::Resources => {
+                bevy_inspector_egui::bevy_inspector::ui_for_resources(self.world, ui);
+            }
+            WindowType::Project => {
+                let project_path = self.world.get_resource_mut::<ProjectPath>().unwrap();
+                show_project_ui(ui, &project_path.path);
+            },
+            WindowType::Console => {
+
             }
         }
     }
@@ -195,27 +240,132 @@ impl egui_dock::TabViewer for TabViewer<'_> {
     }
 }
 
+
+#[derive(Debug, Clone)]
+enum FileNode {
+    Directory(BTreeMap<String, FileNode>),
+    File,
+}
+
+
+fn build_tree(root: &Path) -> FileNode {
+    let mut root_map = BTreeMap::new();
+
+    for result in WalkBuilder::new(root)
+        .standard_filters(true)
+        .follow_links(false)
+        .build()
+    {
+        let Ok(entry) = result else { continue; };
+        let path = entry.path();
+
+        if path == root {
+            continue;
+        }
+
+        let is_dir = entry.file_type().is_some_and(|ft| ft.is_dir());
+
+        let Ok(rel_path) = path.strip_prefix(root) else { continue; };
+        if rel_path.as_os_str().is_empty() {
+            continue; // Shouldn't happen, but be safe
+        }
+
+        insert_into_tree(&mut root_map, rel_path, is_dir);
+    }
+
+    FileNode::Directory(root_map)
+}
+
+fn insert_into_tree(tree: &mut BTreeMap<String, FileNode>, rel_path: &Path, is_dir: bool) {
+    if let Some(first) = rel_path.iter().next() {
+        let key = first.to_string_lossy().to_string();
+        let remainder = rel_path.strip_prefix(first).unwrap_or(rel_path);
+        let entry = tree.entry(key).or_insert_with(|| {
+            if is_dir {
+                FileNode::Directory(BTreeMap::new())
+            } else {
+                FileNode::File
+            }
+        });
+
+        if remainder.components().next().is_none() {
+            if is_dir {
+                *entry = FileNode::Directory(
+                    match entry {
+                        FileNode::Directory(ref m) => m.clone(),
+                        FileNode::File => BTreeMap::new(),
+                    }
+                );
+            } else {
+                *entry = FileNode::File;
+            }
+        } else if let FileNode::Directory(ref mut subtree) = entry {
+            insert_into_tree(subtree, remainder, is_dir);
+        } else {
+            let mut new_map = BTreeMap::new();
+            insert_into_tree(&mut new_map, remainder, is_dir);
+            *entry = FileNode::Directory(new_map);
+        }
+    }
+}
+
+fn show_nested_tree(ui: &mut egui::Ui, root: &std::path::Path) {
+    let file_node = build_tree(root);
+    if let FileNode::Directory(tree_map) = file_node {
+        TreeView::new("nested_tree".into()).show(ui, |builder| {
+            let mut next_id = 0_usize;
+            let root_label = root.to_string_lossy().to_string();
+            
+            render_tree(builder, &tree_map, &mut next_id, &root_label);
+        });
+    }
+}
+
+fn render_tree(
+    builder: &mut TreeViewBuilder<usize>,
+    nodes: &std::collections::BTreeMap<String, FileNode>,
+    next_id: &mut usize,
+    label: &str,
+) {
+    let this_dir_id = *next_id;
+    *next_id += 1;
+
+    builder.dir(this_dir_id, label);
+    for (name, node) in nodes {
+        match node {
+            FileNode::File => {
+                let leaf_id = *next_id;
+                *next_id += 1;
+
+                builder.leaf(leaf_id, name);
+            }
+            FileNode::Directory(subtree) => {
+                render_tree(builder, subtree, next_id, name);
+            }
+        }
+    }
+
+    builder.close_dir();
+}
+
+
+fn show_project_ui(ui: &mut Ui, project_path: &Path) {
+    show_nested_tree(ui, project_path);
+}
+
 impl Default for UiState {
     fn default() -> Self {
         let mut state = DockState::new(vec![ WindowType::Viewport ]);
         let tree = state.main_surface_mut();
         let [game, _inspector] = tree.split_right(NodeIndex::root(), 0.7, vec![ WindowType::Inspector ]);
-        let [_world, _game] = tree.split_left(game, 0.3, vec![ WindowType::World ]);
-        
-        let game_node = tree.iter_mut().find(|node| { // TODO replace with node-index
-            if let Some(tabs) = node.tabs() {
-                if tabs.len() == 1 && matches!(tabs[0], WindowType::Viewport) {
-                    return true;
-                }
-            }
-            false
-        });
-
-        game_node.unwrap().set_collapsed(true);
+        let [world, game] = tree.split_left(game, 0.4, vec![ WindowType::World, WindowType::Assets, WindowType::Resources ]);
+        let [_game, _console] = tree.split_below(world, 0.7, vec![ WindowType::Console ]);
+        let [_world, _project] = tree.split_below(game, 0.7, vec![ WindowType::Project ]);
 
         Self { 
             state, 
-            viewport_rect: egui::Rect::NOTHING
+            viewport_rect: egui::Rect::NOTHING,
+            selected_entities: SelectedEntities::default(),
         }
     }
 }
@@ -225,20 +375,8 @@ impl UiState {
         let mut tab_viewer = TabViewer {
             world,
             viewport_rect: &mut self.viewport_rect,
+            selected_entities: &mut self.selected_entities,
         };
-
-        let game_node = self.state.main_surface_mut().iter_mut().find(|node| { // TODO replace with node-index
-            if let Some(tabs) = node.tabs() {
-                if tabs.len() == 1 && matches!(tabs[0], WindowType::Viewport) {
-                    return true;
-                }
-            }
-            false
-        });
-        
-        if let Some(node) = game_node {
-            node.set_collapsed(true);
-        }
 
         egui_dock::DockArea::new(&mut self.state)
             .style(style)

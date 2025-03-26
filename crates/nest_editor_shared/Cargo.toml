@@ -16,3 +16,6 @@ bevy-inspector-egui = "0.30.0"
 # Other
 serde_json = "1.0.140"
 winit = { version = "0.30", default-features = false, features = ["rwh_06"] }
+egui_ltreeview = "0.1.10"
+egui_logger = "0.6.3"
+ignore = "0.4.23"

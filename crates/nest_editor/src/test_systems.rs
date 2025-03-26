@@ -1,5 +1,3 @@
-use std::f32::consts::PI;
-
 use bevy::prelude::*;
 
 pub fn setup(
@@ -39,14 +37,4 @@ pub fn setup(
             ..Default::default()
         }
     ));
-}
-
-
-pub fn camera_rotate(
-    time: Res<Time>,
-    mut q: Query<(&mut Transform, &Camera3d)>,
-) {
-    for (mut t, _) in q.iter_mut() {
-        t.rotate(Quat::from_rotation_y(ops::sin_cos(time.elapsed_secs() + PI / 2.0).0 * 0.001));
-    }
 }

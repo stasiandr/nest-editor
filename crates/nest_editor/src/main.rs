@@ -141,7 +141,6 @@ fn main() {
     editor_app.add_plugins(bevy_egui::EguiPlugin);
     
     editor_app.add_systems(Startup, test_systems::setup);
-    editor_app.add_systems(Update, test_systems::camera_rotate);
     editor_app.add_event::<OpenGame>();
     editor_app.add_plugins(nest_editor_shared::view::NestEditorViewPlugin);
 
