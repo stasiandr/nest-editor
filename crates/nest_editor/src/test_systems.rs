@@ -47,5 +47,61 @@ pub fn setup(
         TemporalAntiAliasing::default(),
         bevy::core_pipeline::tonemapping::Tonemapping::BlenderFilmic,
         bevy::core_pipeline::bloom::Bloom::NATURAL,
+        bevy::core_pipeline::motion_blur::MotionBlur {
+            shutter_angle: 0.7,
+            samples: 3,
+        },
     ));
 }
+
+pub fn editor_camera_controls(
+    time: Res<Time>,
+    keys: Res<ButtonInput<KeyCode>>,
+    mouse_btn: Res<ButtonInput<MouseButton>>,
+    mut mouse: EventReader<CursorMoved>,
+    mut camera: Query<&mut Transform, With<Camera3d>>,
+) {
+    if !mouse_btn.pressed(MouseButton::Right) {
+        return;
+    }
+
+    let rot_mod = 15.0 * time.delta_secs();
+    let move_mod = 5.0 * time.delta_secs();
+
+    for mut transform in camera.iter_mut() {
+
+        for delta in mouse.read().flat_map(|e| e.delta) {
+            let left = transform.left();
+            transform.rotate_axis(left, delta.y.to_radians() * rot_mod);
+            transform.rotate_axis(Dir3::NEG_Y, delta.x.to_radians() * rot_mod);
+        }
+
+        let right = transform.right();
+        let forward = transform.forward();
+        let up = transform.up();
+
+        if keys.pressed(KeyCode::KeyW) {
+            transform.translation += forward * move_mod;        
+        }
+
+        if keys.pressed(KeyCode::KeyS) {
+            transform.translation -= forward * move_mod;        
+        }
+
+        if keys.pressed(KeyCode::KeyA) {
+            transform.translation -= right * move_mod;        
+        }
+
+        if keys.pressed(KeyCode::KeyD) {
+            transform.translation += right * move_mod;        
+        }
+
+        if keys.pressed(KeyCode::KeyE) {
+            transform.translation += up * move_mod;        
+        }
+
+        if keys.pressed(KeyCode::KeyQ) {
+            transform.translation -= up * move_mod;        
+        }
+    }
+} 

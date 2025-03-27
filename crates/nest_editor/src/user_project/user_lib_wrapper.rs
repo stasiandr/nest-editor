@@ -77,4 +77,9 @@ impl UserLibWrapper {
         let handle_mouse_wheel: Symbol<extern "C" fn(*mut App, f64, f64, bool)> = unsafe { self.lib.get(b"handle_mouse_wheel").unwrap() };
         handle_mouse_wheel(unwrap, x, y, is_line);
     }
+    
+    pub(crate) fn handle_keyboard_event(&self, app: *mut App, json_serialized: *const i8) {
+        let handle_keyboard_event: Symbol<extern "C" fn(*mut App, *const i8)> = unsafe { self.lib.get(b"handle_keyboard_event").unwrap() };
+        handle_keyboard_event(app, json_serialized);
+    }
 }

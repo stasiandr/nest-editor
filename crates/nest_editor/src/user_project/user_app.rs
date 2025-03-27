@@ -1,3 +1,5 @@
+use bevy_input::keyboard::KeyboardInput;
+
 use super::{user_lib_wrapper::UserLibWrapper, UserProject};
 
 
@@ -139,6 +141,16 @@ impl UserApp {
         self.lib.as_ref().unwrap().handle_mouse_wheel(self.app.unwrap(), x, y, is_line);
     }
 
+
+    pub fn handle_keyboard_event(&self, key_input: &KeyboardInput) {
+        if !self.state.at_least(UserAppState::WindowPassedToGame) {
+            panic!("Game app not built");
+        }
+
+        let json_serialized = serde_json::to_string(key_input).unwrap();
+        let cstr = std::ffi::CString::new(json_serialized).unwrap();
+        self.lib.as_ref().unwrap().handle_keyboard_event(self.app.unwrap(), cstr.as_ptr());
+    }
     
 }
 

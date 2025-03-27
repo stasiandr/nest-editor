@@ -5,9 +5,7 @@ pub mod editor_app_utils;
 
 
 
-use bevy::core_pipeline::bloom::BloomPlugin;
-use bevy::core_pipeline::dof::{DepthOfField, DepthOfFieldPlugin};
-use bevy::{core_pipeline::tonemapping::TonemappingPlugin, prelude::*};
+use bevy::prelude::*;
 use bevy::app::App;
 use nest_editor_shared::in_game_editor::OpenGame;
 use user_project::user_app::{UserApp, UserAppState};
@@ -33,8 +31,7 @@ struct MainWindow {
 
 impl winit::application::ApplicationHandler for EditorApp {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        let window = event_loop.create_window(Window::default_attributes()).unwrap();    
-        
+        let window = event_loop.create_window(Window::default_attributes()).unwrap();
         self.insert_window_into_editor_app(window);
     }
 
@@ -47,11 +44,6 @@ impl winit::application::ApplicationHandler for EditorApp {
                 } else {
                     self.game_app.handle_mouse_wheel(delta);
                 }
-
-
-
-                // log::info!("Mouse move");
-                // println!("log");
             }
             WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
                 if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
@@ -88,15 +80,19 @@ impl winit::application::ApplicationHandler for EditorApp {
                     self.game_app.handle_mouse_input(&event);
                 }
             }
-            WindowEvent::KeyboardInput { .. } => {
-                
+            WindowEvent::KeyboardInput { ref event, .. } => {
+                let event = utils::convert_keyboard_input(event, self.main_window.editor_window_entity.unwrap());
+                if !self.game_app.get_app_state().is(UserAppState::WindowPassedToGame) {
+                    self.editor_app.world_mut().send_event(event);
+                } else {
+                    self.game_app.handle_keyboard_event(&event);
+                }
             }
             WindowEvent::CloseRequested => {
                 println!("The close button was pressed; stopping");
                 event_loop.exit();
             },
             WindowEvent::RedrawRequested => {
-                
                 if self.game_app.get_app_state().at_least(UserAppState::WindowPassedToGame) {
                     self.game_app.update_app();
                 } else {
@@ -156,8 +152,9 @@ fn main() {
     editor_app.add_plugins(bevy_egui::EguiPlugin);
     
     editor_app.add_systems(Startup, test_systems::setup);
+    editor_app.add_systems(Update, test_systems::editor_camera_controls);
     editor_app.insert_resource(AmbientLight {
-        brightness: 0.5,
+        brightness: 50.0,
         color: Color::WHITE,
     });
     editor_app.add_event::<OpenGame>();

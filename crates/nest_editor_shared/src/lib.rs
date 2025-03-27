@@ -1,7 +1,7 @@
 pub mod in_game_editor;
 pub mod view;
 
-use bevy::{log::LogPlugin, prelude::PluginGroup};
+use bevy::{input::keyboard::KeyboardInput, log::LogPlugin, prelude::PluginGroup};
 use in_game_editor::ReturnToEditor;
 use std::ptr::NonNull;
 
@@ -95,6 +95,18 @@ pub unsafe extern "C" fn handle_mouse_input(app: *mut bevy::app::App, json_seria
     let event = serde_json::from_str::<bevy::input::mouse::MouseButtonInput>(string.to_str().unwrap()).unwrap();
     app.world_mut().send_event(event);
 }
+
+/// # Safety
+/// I'm not in danger, I'm the danger
+#[no_mangle]
+pub unsafe extern "C" fn handle_keyboard_event(app: *mut bevy::app::App, json_serialized: *const i8) {
+    let app = unsafe { app.as_mut().unwrap() };
+    let string = std::ffi::CStr::from_ptr(json_serialized);
+    let event = serde_json::from_str::<KeyboardInput>(string.to_str().unwrap()).unwrap();
+    app.world_mut().send_event(event);
+}
+
+
 
 /// # Safety
 /// I'm not in danger, I'm the danger
