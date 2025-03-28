@@ -1,11 +1,12 @@
-use std::{collections::BTreeMap, path::{Path, PathBuf}};
+pub mod hierarchy;
+pub mod project;
+
+use std::path::PathBuf;
 
 use bevy::prelude::*;
 use bevy_egui::egui::{self, include_image, Frame, Ui};
 use bevy_inspector_egui::bevy_inspector::hierarchy::SelectedEntities;
 use egui_dock::{DockState, NodeIndex};
-use egui_ltreeview::{TreeView, TreeViewBuilder};
-use ignore::WalkBuilder;
 
 #[derive(Default)]
 pub struct NestEditorViewPlugin;
@@ -66,7 +67,6 @@ pub fn editor_ui_update(
     dock_style.tab_bar.corner_radius = egui::CornerRadius::from(16); 
     dock_style.tab_bar.fill_tab_bar = true;
     dock_style.main_surface_border_rounding = egui::CornerRadius::from(16);
-    // dock_style.tab.inactive.bg_fill = egui::Color32::from_rgba_premultiplied(0, 0, 0, 0);
 
     egui::TopBottomPanel::top("top_panel")
         .exact_height(32.0)
@@ -82,9 +82,9 @@ pub fn editor_ui_update(
                 |ui| {
                     let is_in_game_editor = world.get_resource::<crate::in_game_editor::InGameEditorData>().is_some();
                     let button = if is_in_game_editor {
-                        egui::Button::image_and_text(include_image!("../icons/stop.png"), "Stop")
+                        egui::Button::image_and_text(include_image!("../../icons/stop.png"), "Stop")
                     } else {
-                        egui::Button::image_and_text(include_image!("../icons/right.png"), "Play")
+                        egui::Button::image_and_text(include_image!("../../icons/right.png"), "Play")
                     };
 
                     if ui.add(button).clicked() {
@@ -219,7 +219,7 @@ impl egui_dock::TabViewer for TabViewer<'_> {
                 }
             }
             WindowType::World => {
-                bevy_inspector_egui::bevy_inspector::hierarchy::hierarchy_ui(self.world, ui, self.selected_entities);
+                hierarchy::show_hierarchy_ui(self.world, ui, self.selected_entities);
             }
             WindowType::_Custom(t) => {
                 ui.label(format!("Custom tab: {}", t));
@@ -232,7 +232,7 @@ impl egui_dock::TabViewer for TabViewer<'_> {
             }
             WindowType::Project => {
                 let project_path = self.world.get_resource_mut::<ProjectPath>().unwrap();
-                show_project_ui(ui, &project_path.path);
+                project::show_project_ui(ui, &project_path.path);
             },
             WindowType::Console => {
                 egui_logger::logger_ui().show(ui);
@@ -244,119 +244,6 @@ impl egui_dock::TabViewer for TabViewer<'_> {
     fn allowed_in_windows(&self, tab: &mut Self::Tab) -> bool {
         !matches!(tab, WindowType::Viewport)
     }
-}
-
-
-#[derive(Debug, Clone)]
-enum FileNode {
-    Directory(BTreeMap<String, FileNode>),
-    File,
-}
-
-
-fn build_tree(root: &Path) -> FileNode {
-    let mut root_map = BTreeMap::new();
-
-    for result in WalkBuilder::new(root)
-        .standard_filters(true)
-        .follow_links(false)
-        .build()
-    {
-        let Ok(entry) = result else { continue; };
-        let path = entry.path();
-
-        if path == root {
-            continue;
-        }
-
-        let is_dir = entry.file_type().is_some_and(|ft| ft.is_dir());
-
-        let Ok(rel_path) = path.strip_prefix(root) else { continue; };
-        if rel_path.as_os_str().is_empty() {
-            continue; // Shouldn't happen, but be safe
-        }
-
-        insert_into_tree(&mut root_map, rel_path, is_dir);
-    }
-
-    FileNode::Directory(root_map)
-}
-
-fn insert_into_tree(tree: &mut BTreeMap<String, FileNode>, rel_path: &Path, is_dir: bool) {
-    if let Some(first) = rel_path.iter().next() {
-        let key = first.to_string_lossy().to_string();
-        let remainder = rel_path.strip_prefix(first).unwrap_or(rel_path);
-        let entry = tree.entry(key).or_insert_with(|| {
-            if is_dir {
-                FileNode::Directory(BTreeMap::new())
-            } else {
-                FileNode::File
-            }
-        });
-
-        if remainder.components().next().is_none() {
-            if is_dir {
-                *entry = FileNode::Directory(
-                    match entry {
-                        FileNode::Directory(ref m) => m.clone(),
-                        FileNode::File => BTreeMap::new(),
-                    }
-                );
-            } else {
-                *entry = FileNode::File;
-            }
-        } else if let FileNode::Directory(ref mut subtree) = entry {
-            insert_into_tree(subtree, remainder, is_dir);
-        } else {
-            let mut new_map = BTreeMap::new();
-            insert_into_tree(&mut new_map, remainder, is_dir);
-            *entry = FileNode::Directory(new_map);
-        }
-    }
-}
-
-fn show_nested_tree(ui: &mut egui::Ui, root: &std::path::Path) {
-    let file_node = build_tree(root);
-    if let FileNode::Directory(tree_map) = file_node {
-        TreeView::new("nested_tree".into()).show(ui, |builder| {
-            let mut next_id = 0_usize;
-            let root_label = root.to_string_lossy().to_string();
-            
-            render_tree(builder, &tree_map, &mut next_id, &root_label);
-        });
-    }
-}
-
-fn render_tree(
-    builder: &mut TreeViewBuilder<usize>,
-    nodes: &std::collections::BTreeMap<String, FileNode>,
-    next_id: &mut usize,
-    label: &str,
-) {
-    let this_dir_id = *next_id;
-    *next_id += 1;
-
-    builder.dir(this_dir_id, label);
-    for (name, node) in nodes {
-        match node {
-            FileNode::File => {
-                let leaf_id = *next_id;
-                *next_id += 1;
-
-                builder.leaf(leaf_id, name);
-            }
-            FileNode::Directory(subtree) => {
-                render_tree(builder, subtree, next_id, name);
-            }
-        }
-    }
-
-    builder.close_dir();
-}
-
-
-fn show_project_ui(ui: &mut Ui, project_path: &Path) {
-    show_nested_tree(ui, project_path);
 }
 
 impl Default for UiState {

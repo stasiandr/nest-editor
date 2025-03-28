@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use bevy::prelude::*;
 use bevy_file_dialog::prelude::*;
 
@@ -5,9 +7,7 @@ use bevy_file_dialog::prelude::*;
 struct ByteContents;
 
 #[derive(Component, Debug, Reflect, Default)]
-pub struct SceneObject {
-    name: String,
-}
+pub struct SceneObject;
 
 pub struct EditorSceneManager;
 
@@ -37,7 +37,7 @@ pub fn save_scene_system(world: &mut World) {
         let mut query = world.query_filtered::<Entity, With<SceneObject>>();
 
         let scene = DynamicSceneBuilder::from_world(world)
-            .deny_all_resources()
+            .deny_resource::<Time>()
             .extract_entities(query.iter(world))
             .build();
 
@@ -48,6 +48,8 @@ pub fn save_scene_system(world: &mut World) {
     };
     
     world.commands().dialog().save_file::<ByteContents>(scene_data.as_bytes().to_vec());
+
+    log::info!("Scene saved");
 }
 
 fn save_on_cmd_s(
