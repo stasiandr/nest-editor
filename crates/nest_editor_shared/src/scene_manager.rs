@@ -14,17 +14,28 @@ pub struct EditorSceneManager;
 
 impl Plugin for EditorSceneManager {
     fn build(&self, app: &mut App) {
+        app.add_plugins(SharedSceneManager);
+        
         app
+            .add_event::<SaveScene>()
+            .add_plugins(FileDialogPlugin::new().with_save_file::<ByteContents>())
+            .add_systems(Update, save_scene_system)
+            .add_systems(Update, save_on_cmd_s);
+    }
+}
+
+pub struct SharedSceneManager;
+
+impl Plugin for SharedSceneManager {
+    fn build(&self, app: &mut App) {
+        app
+            .add_plugins(bevy_obj::ObjPlugin)
             .register_type::<EditorMeshWrapper>()
             .register_type::<EditorStandardMaterialWrapper>()
             .register_type::<SceneObject>()
-            .add_event::<SaveScene>()
-            .add_plugins(FileDialogPlugin::new().with_save_file::<ByteContents>())
             .add_systems(Startup, load_scene_system)
             .add_systems(Update, load_meshes)
-            .add_systems(Update, load_standard_materials)
-            .add_systems(Update, save_scene_system)
-            .add_systems(Update, save_on_cmd_s);
+            .add_systems(Update, load_standard_materials);
     }
 }
 
@@ -84,8 +95,9 @@ pub fn load_scene_system(
     asset_server: Res<AssetServer>,
     mut scene_spawner: ResMut<SceneSpawner>,
 ) {
+    println!("scene is loading");
 
-    if !PathBuf::from("scenes/main.scn.ron").exists() && !PathBuf::from("examples/example_bevy_project/assets/scenes/main.scn.ron").exists() {
+    if !PathBuf::from("assets/scenes/main.scn.ron").exists() && !PathBuf::from("examples/example_bevy_project/assets/scenes/main.scn.ron").exists() {
         println!("Loading default");
 
         let scene = asset_server.load::<DynamicScene>("scenes/default.scn.ron");
@@ -93,7 +105,7 @@ pub fn load_scene_system(
 
         return;
     }
-    
+
     let scene = asset_server.load::<DynamicScene>("scenes/main.scn.ron");
     scene_spawner.spawn_dynamic(scene);
 }

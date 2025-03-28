@@ -8,7 +8,6 @@ use bevy_egui::egui::{self, include_image, Frame, Ui};
 use bevy_inspector_egui::bevy_inspector::hierarchy::SelectedEntities;
 use egui_dock::{DockState, NodeIndex};
 
-#[derive(Default)]
 pub struct NestEditorViewPlugin;
 
 #[derive(Default, Resource)]
@@ -29,7 +28,7 @@ impl Plugin for NestEditorViewPlugin {
     }
 
     fn cleanup(&self, _app: &mut App) {
-        egui_logger::builder().init().unwrap();
+        // egui_logger::builder().init().unwrap();
     }
 }
 

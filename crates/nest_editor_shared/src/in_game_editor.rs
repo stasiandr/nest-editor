@@ -1,4 +1,7 @@
 use bevy::prelude::*;
+use bevy_egui::EguiPlugin;
+
+use crate::{scene_manager::SharedSceneManager, view::NestEditorViewPlugin};
 
 
 #[derive(Event, Default)]
@@ -15,9 +18,10 @@ pub struct InGameEditorPlugin;
 impl Plugin for InGameEditorPlugin {
     fn build(&self, app: &mut bevy::app::App) {
         app
-            .add_plugins(bevy_egui::EguiPlugin)
             .add_event::<ReturnToEditor>()
-            .add_plugins(crate::view::NestEditorViewPlugin)
-            .init_resource::<InGameEditorData>();
+            .init_resource::<InGameEditorData>()
+            .add_plugins(EguiPlugin)
+            .add_plugins(NestEditorViewPlugin)
+            .add_plugins(SharedSceneManager);
     }
 }

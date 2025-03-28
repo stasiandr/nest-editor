@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.15.3", features = [ "serialize", "reflect_functions" ] }
+bevy_obj = { version = "0.15", default-features = false, features = ["mesh"] }
 
 # Egui
 bevy_egui = "0.33.0"

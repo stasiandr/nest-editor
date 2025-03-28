@@ -1,6 +1,5 @@
 use bevy::{core_pipeline::experimental::taa::TemporalAntiAliasing, prelude::*};
 
-
 #[derive(Component, Debug, Default)]
 pub struct EditorCamera;
 
@@ -19,7 +18,10 @@ pub fn spawn_editor_camera (
             target: bevy::render::camera::RenderTarget::Window(bevy::window::WindowRef::Entity(window)),
             ..Default::default()
         },
-        bevy::pbr::ScreenSpaceAmbientOcclusion::default(),
+        bevy::pbr::ScreenSpaceAmbientOcclusion {
+            constant_object_thickness: 0.1,
+            ..Default::default()
+        },
         TemporalAntiAliasing::default(),
         bevy::core_pipeline::tonemapping::Tonemapping::BlenderFilmic,
         bevy::core_pipeline::bloom::Bloom::NATURAL,
@@ -27,6 +29,7 @@ pub fn spawn_editor_camera (
             shutter_angle: 0.7,
             samples: 3,
         },
+        Msaa::Off,
         Name::new("EditorCamera"),
     ));
 }

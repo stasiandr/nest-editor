@@ -151,7 +151,6 @@ fn main() {
 
     editor_app.add_plugins(nest_editor_shared::default_plugins_without_windows(user_project.project_assets_path().to_str().unwrap().to_string()));
     editor_app.add_plugins(bevy_egui::EguiPlugin);
-    editor_app.add_plugins(bevy_obj::ObjPlugin);
     
     editor_app.add_systems(Startup, editor_camera::spawn_editor_camera);
     editor_app.add_systems(Update, editor_camera::editor_camera_controls);

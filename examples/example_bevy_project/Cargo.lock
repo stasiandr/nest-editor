@@ -1115,6 +1115,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_obj"
+version = "0.15.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e4191729706530ab50a73998fd94b3d80c9de725891959f45f98d29259f51f3c"
+dependencies = [
+ "bevy",
+ "serde",
+ "thiserror",
+ "tobj",
+]
+
+[[package]]
 name = "bevy_pbr"
 version = "0.15.3"
 source = "git+https://github.com/stasiandr/bevy_unsafe.git?branch=winit-unsafe#488db06bc811986a3c277615f04c5ca5a7f3852d"
@@ -3779,6 +3791,7 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_egui",
  "bevy_file_dialog",
+ "bevy_obj",
  "egui_dock",
  "egui_extras",
  "egui_logger",
@@ -4924,7 +4937,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.9.3",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5375,7 +5388,7 @@ dependencies = [
  "getrandom 0.3.2",
  "once_cell",
  "rustix 1.0.3",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5487,6 +5500,15 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
+
+[[package]]
+name = "tobj"
+version = "4.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04aca6092e5978e708ee784e8ab9b5cf3cdb598b28f99a2f257446e7081a7025"
+dependencies = [
+ "ahash",
+]
 
 [[package]]
 name = "toml"
