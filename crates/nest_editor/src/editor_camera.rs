@@ -1,47 +1,17 @@
 use bevy::{core_pipeline::experimental::taa::TemporalAntiAliasing, prelude::*};
 
-pub fn setup(
+
+#[derive(Component, Debug, Default)]
+pub struct EditorCamera;
+
+pub fn spawn_editor_camera (
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
     q: Query<(Entity, &bevy::window::Window)>,
-) {
-    // circular base
-    commands.spawn((
-        Mesh3d(meshes.add(Circle::new(4.0))),
-        MeshMaterial3d(materials.add(Color::WHITE)),
-        Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
-        nest_editor_shared::scene_manager::SceneObject,
-        Name::new("Plane"),
-    )).with_child((
-        Mesh3d(meshes.add(Cuboid::new(1.0, 1.0, 1.0))),
-        MeshMaterial3d(materials.add(Color::srgb_u8(124, 144, 255))),
-        Transform::from_xyz(0.0, 0.5, 0.0),
-        nest_editor_shared::scene_manager::SceneObject,
-        Name::new("Cube"),
-    ));
-    
-    // light
-    commands.spawn((
-        DirectionalLight {
-            shadows_enabled: true,
-            illuminance: 1000.0,
-            ..default()
-        },
-        Transform::from_rotation(Quat::from_euler(
-            EulerRot::ZYX,
-            0.0,
-            std::f32::consts::PI * 0.15,
-            std::f32::consts::PI * -0.15,
-        )),
-        nest_editor_shared::scene_manager::SceneObject,
-        Name::new("Light"),
-    ));
-
+)
+{
     let window = q.single().0;
-
-    // camera
     commands.spawn((
+        EditorCamera,
         Camera3d::default(),
         Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
         Camera {
@@ -57,8 +27,7 @@ pub fn setup(
             shutter_angle: 0.7,
             samples: 3,
         },
-        nest_editor_shared::scene_manager::SceneObject,
-        Name::new("Camera"),
+        Name::new("EditorCamera"),
     ));
 }
 
@@ -67,7 +36,7 @@ pub fn editor_camera_controls(
     keys: Res<ButtonInput<KeyCode>>,
     mouse_btn: Res<ButtonInput<MouseButton>>,
     mut mouse: EventReader<CursorMoved>,
-    mut camera: Query<&mut Transform, With<Camera3d>>,
+    mut camera: Query<&mut Transform, With<EditorCamera>>,
 ) {
     if !mouse_btn.pressed(MouseButton::Right) {
         return;

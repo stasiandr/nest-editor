@@ -1,6 +1,6 @@
 pub mod user_project;
 pub mod utils;
-pub mod test_systems;
+pub mod editor_camera;
 pub mod editor_app_utils;
 
 
@@ -144,14 +144,17 @@ impl winit::application::ApplicationHandler for EditorApp {
 fn main() {
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(winit::event_loop::ControlFlow::Poll);
+    let user_project = user_project::UserProject::new("examples/example_bevy_project".into());
 
     let mut editor_app = App::new();
-
-    editor_app.add_plugins(nest_editor_shared::default_plugins_without_windows());
-    editor_app.add_plugins(bevy_egui::EguiPlugin);
     
-    editor_app.add_systems(Startup, test_systems::setup);
-    editor_app.add_systems(Update, test_systems::editor_camera_controls);
+
+    editor_app.add_plugins(nest_editor_shared::default_plugins_without_windows(user_project.project_assets_path().to_str().unwrap().to_string()));
+    editor_app.add_plugins(bevy_egui::EguiPlugin);
+    editor_app.add_plugins(bevy_obj::ObjPlugin);
+    
+    editor_app.add_systems(Startup, editor_camera::spawn_editor_camera);
+    editor_app.add_systems(Update, editor_camera::editor_camera_controls);
     editor_app.insert_resource(AmbientLight {
         brightness: 50.0,
         color: Color::WHITE,
@@ -160,7 +163,7 @@ fn main() {
     editor_app.add_plugins(nest_editor_shared::scene_manager::EditorSceneManager);
     editor_app.add_plugins(nest_editor_shared::view::NestEditorViewPlugin);
 
-    let user_project = user_project::UserProject::new("examples/example_bevy_project".into());
+    
     editor_app.insert_resource(user_project.clone());
 
     let mut winit_app = EditorApp {

@@ -44,4 +44,8 @@ impl UserProject {
         std::fs::rename(self.generated_dylib_path(), &new_path).unwrap();
         new_path
     }
+
+    pub fn project_assets_path(&self) -> PathBuf {
+        self.absolute_project_path().join("assets")
+    }
 }

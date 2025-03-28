@@ -2,7 +2,7 @@ pub mod in_game_editor;
 pub mod view;
 pub mod scene_manager;
 
-use bevy::{input::keyboard::KeyboardInput, log::LogPlugin, prelude::PluginGroup};
+use bevy::{asset::AssetPlugin, input::keyboard::KeyboardInput, log::LogPlugin, prelude::PluginGroup};
 use in_game_editor::ReturnToEditor;
 use std::ptr::NonNull;
 
@@ -58,13 +58,17 @@ pub unsafe extern "C" fn remove_window_handle(app: *mut bevy::app::App) {
     app.world_mut().entity_mut(res).remove::<bevy::window::RawHandleWrapper>();
 }
 
-pub fn default_plugins_without_windows() -> bevy::app::PluginGroupBuilder {
+pub fn default_plugins_without_windows(assets_path: String) -> bevy::app::PluginGroupBuilder {
     bevy::DefaultPlugins.build()
         .disable::<bevy::winit::WinitPlugin>()
         .disable::<LogPlugin>()
         .set(bevy::window::WindowPlugin {
             primary_window: None,
             exit_condition: bevy::window::ExitCondition::DontExit,
+            ..Default::default()
+        })
+        .set(AssetPlugin {
+            file_path: assets_path,
             ..Default::default()
         })
 }

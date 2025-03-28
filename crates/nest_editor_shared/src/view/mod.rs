@@ -107,8 +107,6 @@ pub fn editor_ui_update(
                 ui_state.ui(world, ui, dock_style);
             });
         });
-
-    
 }
 
 
@@ -118,7 +116,13 @@ fn set_camera_viewport(
     egui_settings: Query<&bevy_egui::EguiContextSettings>,
     mut cameras: Query<&mut Camera>,
 ) {
-    let mut cam = cameras.single_mut();
+    let cam = cameras.get_single_mut();
+
+    if cam.is_err() {
+        return;
+    }
+
+    let mut cam = cam.unwrap();
 
     let Ok(window) = primary_window.get_single() else {
         return;
