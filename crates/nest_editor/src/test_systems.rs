@@ -11,10 +11,12 @@ pub fn setup(
         Mesh3d(meshes.add(Circle::new(4.0))),
         MeshMaterial3d(materials.add(Color::WHITE)),
         Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
+        nest_editor_shared::scene_manager::SceneObject::default()
     )).with_child((
         Mesh3d(meshes.add(Cuboid::new(1.0, 1.0, 1.0))),
         MeshMaterial3d(materials.add(Color::srgb_u8(124, 144, 255))),
         Transform::from_xyz(0.0, 0.5, 0.0),
+        nest_editor_shared::scene_manager::SceneObject::default(),
     ));
     
     // light
@@ -30,6 +32,7 @@ pub fn setup(
             std::f32::consts::PI * 0.15,
             std::f32::consts::PI * -0.15,
         )),
+        nest_editor_shared::scene_manager::SceneObject::default(),
     ));
 
     let window = q.single().0;
@@ -51,6 +54,7 @@ pub fn setup(
             shutter_angle: 0.7,
             samples: 3,
         },
+        nest_editor_shared::scene_manager::SceneObject::default(),
     ));
 }
 

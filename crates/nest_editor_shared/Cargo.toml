@@ -10,6 +10,7 @@ bevy = { version = "0.15.3", features = [ "serialize", "reflect_functions" ] }
 bevy_egui = "0.33.0"
 egui_dock = "0.16.0"
 egui_extras = { version = "*", features = ["all_loaders"] }
+bevy_file_dialog = { git = "https://github.com/richardhozak/bevy_file_dialog.git" }
 image = { version = "0.25", features = ["jpeg", "png"] }
 bevy-inspector-egui = "0.30.0"
 

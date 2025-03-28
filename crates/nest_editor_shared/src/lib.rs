@@ -1,5 +1,6 @@
 pub mod in_game_editor;
 pub mod view;
+pub mod scene_manager;
 
 use bevy::{input::keyboard::KeyboardInput, log::LogPlugin, prelude::PluginGroup};
 use in_game_editor::ReturnToEditor;

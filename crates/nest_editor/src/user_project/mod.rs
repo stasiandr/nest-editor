@@ -2,10 +2,11 @@ pub mod user_lib_wrapper;
 pub mod user_app;
 
 use std::{env::temp_dir, path::PathBuf};
+use bevy::ecs::system::Resource;
 use uuid::Uuid;
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Resource)]
 pub struct UserProject {
     project_path: PathBuf,
 }

@@ -1,5 +1,3 @@
-
-
 use bevy::prelude::*;
 use bevy::window::{PrimaryWindow, WindowWrapper};
 use winit::dpi::{PhysicalPosition, PhysicalSize};

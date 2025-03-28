@@ -132,7 +132,6 @@ impl winit::application::ApplicationHandler for EditorApp {
                     self.game_app.handle_scale_factor_changed(win.resolution.scale_factor().into());
                 }
 
-            
                 for w in self.windows.values() {
                     w.request_redraw();
                 }
@@ -158,11 +157,15 @@ fn main() {
         color: Color::WHITE,
     });
     editor_app.add_event::<OpenGame>();
+    editor_app.add_plugins(nest_editor_shared::scene_manager::EditorSceneManager);
     editor_app.add_plugins(nest_editor_shared::view::NestEditorViewPlugin);
+
+    let user_project = user_project::UserProject::new("examples/example_bevy_project".into());
+    editor_app.insert_resource(user_project.clone());
 
     let mut winit_app = EditorApp {
         editor_app,
-        user_project: user_project::UserProject::new("examples/example_bevy_project".into()),
+        user_project,
         main_window: MainWindow::default(),
         game_app: UserApp::default(),
         windows: bevy::utils::HashMap::default(),
