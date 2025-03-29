@@ -3768,6 +3768,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "nest_editor_macro"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "nest_editor_shared"
 version = "0.1.0"
 dependencies = [

@@ -38,7 +38,7 @@ impl UserApp {
             panic!("Library not loaded");
         }
 
-        self.app = Some(self.lib.as_ref().unwrap().app_builder());
+        self.app = Some(self.lib.as_ref().unwrap().app_exporter());
         self.state = UserAppState::GameAppBuilt;
     }
 

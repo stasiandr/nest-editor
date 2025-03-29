@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 bevy = {version = "0.15.3", features = ["trace_tracy"] }
 nest_editor_shared = { path = "../../crates/nest_editor_shared" }
+nest_editor_macro = { path = "../../crates/nest_editor_macro" }
 
 [lib]
 crate-type = ["cdylib", "rlib"]

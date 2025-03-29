@@ -27,8 +27,8 @@ impl UserLibWrapper {
         self.lib.close().unwrap();
     }
 
-    pub fn app_builder(&self) -> *mut App {
-        let app_builder: Symbol<extern "C" fn() -> *mut bevy::app::App> = unsafe { self.lib.get(b"app_builder").unwrap() };
+    pub fn app_exporter(&self) -> *mut App {
+        let app_builder: Symbol<extern "C" fn() -> *mut bevy::app::App> = unsafe { self.lib.get(b"app_exporter").unwrap() };
         app_builder()
     }
 

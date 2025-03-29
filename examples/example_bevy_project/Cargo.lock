@@ -2496,6 +2496,7 @@ name = "example_bevy_project"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "nest_editor_macro",
  "nest_editor_shared",
 ]
 
@@ -3781,6 +3782,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee6cda3051665f1fb8d9e08fc35c96d5a244fb1be711a03b71118828afc9a873"
 dependencies = [
  "jni-sys",
+]
+
+[[package]]
+name = "nest_editor_macro"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

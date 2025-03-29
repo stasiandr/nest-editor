@@ -2,7 +2,7 @@ pub mod in_game_editor;
 pub mod view;
 pub mod scene_manager;
 
-use bevy::{asset::AssetPlugin, input::keyboard::KeyboardInput, prelude::PluginGroup};
+use bevy::{asset::AssetPlugin, input::keyboard::KeyboardInput, prelude::PluginGroup, DefaultPlugins};
 use in_game_editor::ReturnToEditor;
 use std::ptr::NonNull;
 
@@ -163,4 +163,49 @@ pub unsafe extern "C" fn handle_mouse_wheel(app: *mut bevy::app::App, x: f64, y:
     };
 
     app.world_mut().send_event(event);
+}
+
+
+/// # Safety
+/// No nothing about
+#[no_mangle]
+pub unsafe extern "C" fn update_app(app_ptr: *mut bevy::app::App) {
+    // Safety: the host must only call this with the pointer returned by create_app,
+    // and that pointer must not have been freed yet.
+    if let Some(app) = unsafe { app_ptr.as_mut() } {
+        // Let Bevy do its update for this frame:
+        app.update();
+    }
+}
+
+
+#[derive(Debug, Default)]
+pub struct DefaultNestPlugins {
+    is_editor: bool
+}
+
+impl Plugin for DefaultNestPlugins {
+    fn build(&self, app: &mut bevy::app::App) {
+        println!("DefaultNestPlugins is installed!");
+        if !self.is_editor {
+            println!("Game mode");
+            app.add_plugins(DefaultPlugins)
+                .add_plugins(scene_manager::SharedSceneManager);
+        } else {
+            println!("Editor mode");
+            app.add_plugins(default_plugins_without_windows("/Users/stas/learn/nest-editor/examples/example_bevy_project/assets".to_string()));
+            app.add_plugins(in_game_editor::InGameEditorPlugin);
+
+            let entity = app.world_mut().spawn_empty().id();
+            let mut e = app.world_mut().entity_mut(entity);
+            e.insert(bevy::window::PrimaryWindow);
+            e.insert(bevy::window::Window::default());
+        }
+    }
+}
+
+impl DefaultNestPlugins {
+    pub fn editor() -> Self {
+        Self { is_editor: true }
+    }
 }

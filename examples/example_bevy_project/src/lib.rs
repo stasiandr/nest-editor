@@ -1,46 +1,14 @@
-use bevy::{log::LogPlugin, prelude::*};
+use bevy::prelude::*;
 
-use nest_editor_shared::*;
-
-#[no_mangle]
-pub extern "C" fn app_builder() -> *mut App {
-    let mut app = App::new();
-    app.add_plugins(nest_editor_shared::default_plugins_without_windows("/Users/stas/learn/nest-editor/examples/example_bevy_project/assets".to_string()));
-    app.add_plugins(nest_editor_shared::in_game_editor::InGameEditorPlugin);
-
-    app.add_systems(Startup, setup);
-
-    let entity = app.world_mut().spawn_empty().id();
-    let mut e = app.world_mut().entity_mut(entity);
-    e.insert(bevy::window::PrimaryWindow);
-    e.insert(bevy::window::Window::default());
-
-    app.finish();
-    app.cleanup();
-
-    Box::into_raw(Box::new(app))
-}
-
+#[nest_editor_macro::app_builder]
 pub fn app() -> App {
     let mut app = App::new();
-    
-    app.add_plugins(DefaultPlugins.build().disable::<LogPlugin>());
-    app.add_plugins(nest_editor_shared::in_game_editor::InGameEditorPlugin);
+    app.add_plugins(DefaultPlugins);
     app.add_systems(Startup, setup);
+    app.add_systems(Update, move_cube);
     app
 }
 
-/// # Safety
-/// No nothing about
-#[no_mangle]
-pub unsafe extern "C" fn update_app(app_ptr: *mut App) {
-    // Safety: the host must only call this with the pointer returned by create_app,
-    // and that pointer must not have been freed yet.
-    if let Some(app) = unsafe { app_ptr.as_mut() } {
-        // Let Bevy do its update for this frame:
-        app.update();
-    }
-}
 
 pub fn setup(
     mut commands: Commands,
@@ -56,5 +24,36 @@ pub fn setup(
                 ..Default::default()
             }
         ));    
+    }
+}
+
+pub fn move_cube(
+        time: Res<Time>, 
+        mut query: Query<(&mut Transform, &Name)>,
+        keyboard_input: Res<ButtonInput<KeyCode>>,
+) {
+    
+    for (mut transform, name) in query.iter_mut() {
+        if name.as_str() != "Cube" {
+            continue;
+        }
+
+        let mut direction = Vec3::ZERO;
+        if keyboard_input.pressed(KeyCode::KeyW) {
+            direction -= Vec3::Z;
+        }
+        if keyboard_input.pressed(KeyCode::KeyS) {
+            direction += Vec3::Z;
+        }
+        if keyboard_input.pressed(KeyCode::KeyA) {
+            direction -= Vec3::X;
+        }
+        if keyboard_input.pressed(KeyCode::KeyD) {
+            direction += Vec3::X;
+        }
+
+        if direction.length() > 0.0 {
+            transform.translation += direction.normalize() * time.delta_secs() * 2.0;
+        }
     }
 }

@@ -3,6 +3,8 @@ resolver = "2"
 
 members = [
     "crates/nest_editor",
+    "crates/nest_editor_macro",
+    "crates/nest_editor_shared",
 ]
 
 exclude = [
