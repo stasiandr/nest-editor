@@ -4,16 +4,33 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = {version = "0.15.3", features = ["trace_tracy"] }
+bevy = "0.15.3"
 nest_editor_shared = { path = "../../crates/nest_editor_shared" }
 nest_editor_macro = { path = "../../crates/nest_editor_macro" }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[profile.dev]
-lto = false
-strip = false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 [patch.crates-io]
 bevy = { git = "https://github.com/stasiandr/bevy_unsafe.git", branch = "winit-unsafe" }

@@ -275,7 +275,7 @@ impl egui_dock::TabViewer for TabViewer<'_> {
             }
             WindowType::Project => {
                 let project_path = self.world.get_resource_mut::<ProjectPath>().unwrap();
-                project::show_project_ui(ui, &project_path.path);
+                project::show_project_ui(ui, &project_path.path.join("examples/example_bevy_project"));
             },
             WindowType::Console => {
                 egui_logger::logger_ui().show(ui);
