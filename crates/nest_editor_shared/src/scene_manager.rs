@@ -44,7 +44,7 @@ pub struct SaveScene;
 
 
 #[derive(Component, Reflect, Default)]
-#[reflect(Component)]
+#[reflect(Component, Default)]
 pub struct EditorMeshWrapper {
     pub mesh_path: String,
 }
@@ -57,7 +57,7 @@ impl EditorMeshWrapper {
 
 
 #[derive(Component, Reflect, Default)]
-#[reflect(Component)]
+#[reflect(Component, Default)]
 pub struct EditorStandardMaterialWrapper {
     pub color: Color,
 }
@@ -70,7 +70,7 @@ impl EditorStandardMaterialWrapper {
 
 pub fn load_meshes(
     mut commands: Commands,
-    mut query: Query<(Entity, &EditorMeshWrapper), Without<Mesh3d>>,
+    mut query: Query<(Entity, &EditorMeshWrapper), Changed<EditorMeshWrapper>>,
     asset_server: Res<AssetServer>,
 ) {
     for (entity, editor_mesh) in query.iter_mut() {
@@ -81,7 +81,7 @@ pub fn load_meshes(
 
 pub fn load_standard_materials(
     mut commands: Commands,
-    mut query: Query<(Entity, &EditorStandardMaterialWrapper), Without<MeshMaterial3d<StandardMaterial>>>,
+    mut query: Query<(Entity, &EditorStandardMaterialWrapper), Changed<EditorStandardMaterialWrapper>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     for (entity, editor_material) in query.iter_mut() {

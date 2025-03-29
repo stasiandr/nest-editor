@@ -1,6 +1,6 @@
 # Next steps
 
-- [ ] Add entity in World window
+- [x] Add entity in World window
 - [ ] Add Component in Inspector window
 - [ ] Proper path handling
   - [ ] Inside editor

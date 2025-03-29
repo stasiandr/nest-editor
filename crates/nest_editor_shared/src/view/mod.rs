@@ -5,8 +5,10 @@ use std::path::PathBuf;
 
 use bevy::prelude::*;
 use bevy_egui::egui::{self, include_image, Frame, Ui};
-use bevy_inspector_egui::bevy_inspector::hierarchy::SelectedEntities;
+use bevy_inspector_egui::{bevy_inspector::hierarchy::SelectedEntities, dropdown::DropDownBox};
 use egui_dock::{DockState, NodeIndex};
+
+use crate::scene_manager::SceneObject;
 
 pub struct NestEditorViewPlugin;
 
@@ -180,6 +182,7 @@ pub struct UiState {
     state: DockState<WindowType>,
     viewport_rect: egui::Rect,
     selected_entities: SelectedEntities,
+    new_component_buffer: String,
 }
 
 #[derive(Resource)]
@@ -187,6 +190,8 @@ pub struct TabViewer<'a> {
     world: &'a mut World,
     viewport_rect: &'a mut egui::Rect,
     selected_entities: &'a mut SelectedEntities,
+
+    new_component_buffer: &'a mut String,
 }
 
 impl egui_dock::TabViewer for TabViewer<'_> {
@@ -217,12 +222,47 @@ impl egui_dock::TabViewer for TabViewer<'_> {
                 if self.selected_entities.len() == 1 {
                     let entity = self.selected_entities.as_slice()[0];
                     bevy_inspector_egui::bevy_inspector::ui_for_entity(self.world, entity, ui);
+
+                    ui.horizontal(|ui| {
+                        self.add_component(ui);
+                        if ui.button("add").clicked() {
+
+                            let registry = self.world.resource::<AppTypeRegistry>().clone();
+                            let registry = registry.read();
+
+                            let registration = registry
+                                .iter()
+                                .find(|reg| reg.type_info().type_path() == self.new_component_buffer)
+                                .ok_or_else(|| format!("Component {} not found", self.new_component_buffer)).unwrap();
+                            
+
+                            if let Some(default) = registration.data::<ReflectDefault>() {
+                                let value = default.default();
+                                if let Some(registration) = registration.data::<ReflectComponent>() {
+                                    let mut entity =  self.world.entity_mut(entity);
+                                    
+                                    registration.insert(&mut entity, value.as_partial_reflect(), &registry);
+                                }
+                            }
+
+                            // self.world.commands().entity(entity).insert_by_id(registration, Default::default());
+                        }
+                    });
+                    
+                    
+
+                    
+
                 } else {
                     bevy_inspector_egui::bevy_inspector::ui_for_entities_shared_components(self.world, self.selected_entities.as_slice(), ui);
                 }
             }
             WindowType::World => {
                 hierarchy::show_hierarchy_ui(self.world, ui, self.selected_entities);
+                
+                if ui.button("Create entity").clicked() {
+                    self.world.commands().spawn(SceneObject);
+                }
             }
             WindowType::_Custom(t) => {
                 ui.label(format!("Custom tab: {}", t));
@@ -249,6 +289,28 @@ impl egui_dock::TabViewer for TabViewer<'_> {
     }
 }
 
+impl TabViewer<'_> {
+    pub fn add_component(&mut self, ui: &mut egui::Ui) {
+        let registry = self.world.resource::<AppTypeRegistry>();
+        let registry = registry.read();
+
+        
+        let items = registry.iter()
+            .filter(|ty| ty.data::<ReflectComponent>().is_some())
+            .map(|ty| ty.type_info().type_path())
+            .collect::<Vec<_>>();
+
+        ui.add(DropDownBox::from_iter(
+            items, 
+            ui.id().with("new_component"), 
+            self.new_component_buffer, 
+            |ui, path| {
+                ui.selectable_label(false, path)
+            }
+        ));
+    }
+}
+
 impl Default for UiState {
     fn default() -> Self {
         let mut state = DockState::new(vec![ WindowType::Viewport ]);
@@ -262,6 +324,7 @@ impl Default for UiState {
             state, 
             viewport_rect: egui::Rect::NOTHING,
             selected_entities: SelectedEntities::default(),
+            new_component_buffer: String::new(),
         }
     }
 }
@@ -272,6 +335,7 @@ impl UiState {
             world,
             viewport_rect: &mut self.viewport_rect,
             selected_entities: &mut self.selected_entities,
+            new_component_buffer: &mut self.new_component_buffer,
         };
 
         egui_dock::DockArea::new(&mut self.state)
