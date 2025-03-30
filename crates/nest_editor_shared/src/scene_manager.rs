@@ -105,7 +105,6 @@ pub fn load_scene_system(
 
         return;
     }
-
     let scene = asset_server.load::<DynamicScene>("scenes/main.scn.ron");
     scene_spawner.spawn_dynamic(scene);
 }

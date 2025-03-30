@@ -191,6 +191,7 @@ impl Plugin for DefaultNestPlugins {
             println!("Game mode");
             app.add_plugins(DefaultPlugins)
                 .add_plugins(scene_manager::SharedSceneManager);
+            app.add_systems(Startup, setup_camera);
         } else {
             println!("Editor mode");
             app.add_plugins(default_plugins_without_windows("/Users/stas/learn/nest-editor/examples/example_bevy_project/assets".to_string()));
@@ -228,4 +229,34 @@ impl DefaultNestPlugins {
     pub fn editor() -> Self {
         Self { is_editor: true }
     }
+}
+
+
+pub fn temporary_spawn_camera (
+    mut commands: Commands,
+    q: Query<(Entity, &bevy::window::Window)>,
+)
+{
+    let window = q.single().0;
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
+        Camera {
+            hdr: true,
+            target: bevy::render::camera::RenderTarget::Window(bevy::window::WindowRef::Entity(window)),
+            ..Default::default()
+        },
+        bevy::pbr::ScreenSpaceAmbientOcclusion {
+            constant_object_thickness: 0.1,
+            ..Default::default()
+        },
+        bevy::core_pipeline::tonemapping::Tonemapping::BlenderFilmic,
+        bevy::core_pipeline::bloom::Bloom::NATURAL,
+        bevy::core_pipeline::motion_blur::MotionBlur {
+            shutter_angle: 0.7,
+            samples: 3,
+        },
+        Msaa::Off,
+        Name::new("EditorCamera"),
+    ));
 }

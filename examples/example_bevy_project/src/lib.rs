@@ -9,11 +9,10 @@ pub fn app() -> App {
 }
 
 pub fn move_cube(
-        time: Res<Time>, 
-        mut query: Query<(&mut Transform, &Name)>,
-        keyboard_input: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>, 
+    mut query: Query<(&mut Transform, &Name)>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
-    
     for (mut transform, name) in query.iter_mut() {
         if name.as_str() != "Cube" {
             continue;
