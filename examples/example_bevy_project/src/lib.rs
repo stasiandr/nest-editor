@@ -4,27 +4,8 @@ use bevy::prelude::*;
 pub fn app() -> App {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins);
-    app.add_systems(Startup, setup);
     app.add_systems(Update, move_cube);
     app
-}
-
-
-pub fn setup(
-    mut commands: Commands,
-    q: Query<Entity, With<bevy::window::Window>>,
-) {
-    if let Ok(window) = q.get_single() {
-        // camera
-        commands.spawn((
-            Camera3d::default(),
-            Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
-            Camera {
-                target: bevy::render::camera::RenderTarget::Window(bevy::window::WindowRef::Entity(window)),
-                ..Default::default()
-            }
-        ));    
-    }
 }
 
 pub fn move_cube(
